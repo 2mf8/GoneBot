@@ -4,7 +4,7 @@
 // 	protoc        v3.21.1
 // source: onebot_frame.proto
 
-package proto
+package onebot
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

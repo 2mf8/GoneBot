@@ -186,7 +186,7 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) DeleteMsg(messageId int32) (*onebot.DeleteMsgResp, error) {
+func (bot *Bot) DeleteMsg(messageId []byte) (*onebot.DeleteMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TDeleteMsgReq,
 		Data: &onebot.Frame_DeleteMsgReq{
