@@ -8,8 +8,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/ProtobufBot/go-pbbot"
-	"github.com/ProtobufBot/go-pbbot/proto_gen/onebot"
+	"github.com/2mf8/go-pbbot-for-rq"
+	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 	"github.com/gin-gonic/gin"
 )
 
