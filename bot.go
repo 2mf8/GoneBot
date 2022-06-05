@@ -334,7 +334,7 @@ func (bot *Bot) SetFriendAddRequest(flag string, approve bool, remark string) (*
 	}
 }
 
-func (bot *Bot) SetGroupAddRequest(flag string, approve bool, subType, reason string) (*onebot.SetGroupAddRequestResp, error) {
+func (bot *Bot) SetGroupAddRequest(flag string, subType string, approve bool, reason string) (*onebot.SetGroupAddRequestResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSetGroupAddRequestReq,
 		Data: &onebot.Frame_SetGroupAddRequestReq{
