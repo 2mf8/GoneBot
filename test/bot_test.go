@@ -22,7 +22,8 @@ func TestBotServer(t *testing.T) {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
 		userId := event.UserId
-		replyMsg := pbbot.NewMsg().Text("hello world").At(userId).Text("你发送了:" + rawMsg)
+		display := event.Sender.Card
+		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
 		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {

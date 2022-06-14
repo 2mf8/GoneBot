@@ -1,4 +1,4 @@
-# go-pbbot
+# go-pbbot-for-rq
 
 使用方法
 
@@ -27,7 +27,8 @@ func main() {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
 		userId := event.UserId
-		replyMsg := pbbot.NewMsg().Text("hello world").At(userId).Text("你发送了:" + rawMsg)
+		display := event.Sender.Card
+		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
 		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
 	}
 
