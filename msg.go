@@ -46,12 +46,12 @@ func (msg *Msg) Image(url string) *Msg {
 	return msg
 }
 
-func (msg *Msg) At(qq int64, dispaly string) *Msg {
+func (msg *Msg) At(qq int64, display string) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "at",
 		Data: map[string]string{
 			"qq": strconv.FormatInt(qq, 10),
-			"display": dispaly,
+			"display": display,
 		},
 	})
 	return msg
