@@ -1,8 +1,6 @@
 syntax = "proto3";
 package onebot;
 
-option go_package =".";
-
 message Message{
     string type = 1;
     map<string, string> data = 2;

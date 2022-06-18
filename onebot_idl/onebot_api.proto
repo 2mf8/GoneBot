@@ -2,7 +2,6 @@ syntax = "proto3";
 package onebot;
 import "onebot_base.proto";
 
-option go_package =".";
 
 message SendPrivateMsgReq{
     int64 user_id = 1;
@@ -11,7 +10,7 @@ message SendPrivateMsgReq{
 }
 message SendPrivateMsgResp{
 //    int32 message_id = 1; // 废弃
-    bytes message_id = 2;
+    MessageReceipt message_id = 2;
 }
 
 message SendGroupMsgReq{
@@ -21,7 +20,7 @@ message SendGroupMsgReq{
 }
 message SendGroupMsgResp{
 //    int32 message_id = 1; // 废弃
-    bytes message_id = 2;
+    MessageReceipt message_id = 2;
 }
 
 message SendMsgReq{
@@ -33,12 +32,12 @@ message SendMsgReq{
 }
 message SendMsgResp{
 //    int32 message_id = 1; // 废弃
-    bytes message_id = 2;
+    MessageReceipt message_id = 2;
 }
 
 message DeleteMsgReq{
 //    int32 message_id = 1;
-    bytes message_id = 2;
+    MessageReceipt message_id = 2;
 }
 message DeleteMsgResp{
 }
@@ -87,6 +86,7 @@ message SetGroupKickReq{
     int64 group_id = 1;
     int64 user_id = 2;
     bool reject_add_request = 3;
+    repeated int64 user_ids = 4;
 }
 message SetGroupKickResp{
 }
@@ -395,4 +395,10 @@ message SetRestartResp{
 message CleanCacheReq{
 }
 message CleanCacheResp{
+}
+
+message SetGroupSignInReq{
+    int64 group_id = 1;
+}
+message SetGroupSignInResp{
 }

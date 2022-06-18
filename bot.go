@@ -186,7 +186,7 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) DeleteMsg(messageId []byte) (*onebot.DeleteMsgResp, error) {
+func (bot *Bot) DeleteMsg(messageId *onebot.MessageReceipt) (*onebot.DeleteMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TDeleteMsgReq,
 		Data: &onebot.Frame_DeleteMsgReq{
@@ -452,5 +452,20 @@ func (bot *Bot) GetGroupMemberList(groupId int64) (*onebot.GetGroupMemberListRes
 		return nil, err
 	} else {
 		return resp.GetGetGroupMemberListResp(), nil
+	}
+}
+
+func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error){
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSetGroupSignInReq,
+		Data: &onebot.Frame_SetGroupSignInReq{
+			SetGroupSignInReq: &onebot.SetGroupSignInReq{
+				GroupId: groupId,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	}else{
+		return resp.GetSetGroupSignInResp(), nil
 	}
 }
