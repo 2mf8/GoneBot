@@ -307,7 +307,7 @@ func (bot *Bot) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle s
 				GroupId:      groupId,
 				UserId:       userId,
 				SpecialTitle: specialTitle,
-				Duration:     duration,
+				//Duration:     duration,  无效
 			},
 		},
 	}); err != nil {
