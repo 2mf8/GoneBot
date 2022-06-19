@@ -299,7 +299,7 @@ func (bot *Bot) SetGroupLeave(groupId int64, isDismiss bool) (*onebot.SetGroupLe
 	}
 }
 
-func (bot *Bot) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle string, duration int64) (*onebot.SetGroupSpecialTitleResp, error) {
+func (bot *Bot) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle string) (*onebot.SetGroupSpecialTitleResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSetGroupSpecialTitleReq,
 		Data: &onebot.Frame_SetGroupSpecialTitleReq{
@@ -307,7 +307,6 @@ func (bot *Bot) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle s
 				GroupId:      groupId,
 				UserId:       userId,
 				SpecialTitle: specialTitle,
-				//Duration:     duration,  无效
 			},
 		},
 	}); err != nil {
