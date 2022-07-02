@@ -299,6 +299,7 @@ func (bot *Bot) SetGroupLeave(groupId int64, isDismiss bool) (*onebot.SetGroupLe
 	}
 }
 
+// rq 设置不了
 func (bot *Bot) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle string) (*onebot.SetGroupSpecialTitleResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSetGroupSpecialTitleReq,
@@ -454,7 +455,7 @@ func (bot *Bot) GetGroupMemberList(groupId int64) (*onebot.GetGroupMemberListRes
 	}
 }
 
-func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error){
+func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSetGroupSignInReq,
 		Data: &onebot.Frame_SetGroupSignInReq{
@@ -464,7 +465,7 @@ func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error
 		},
 	}); err != nil {
 		return nil, err
-	}else{
+	} else {
 		return resp.GetSetGroupSignInResp(), nil
 	}
 }
