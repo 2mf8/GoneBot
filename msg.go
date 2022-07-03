@@ -66,3 +66,43 @@ func (msg *Msg) LightApp(content string) *Msg{
 	})
 	return msg
 }
+
+func (msg *Msg) TTS(text string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "tts",
+		Data: map[string]string{
+			"text": text,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Poke(qq int64) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "poke",
+		Data: map[string]string{
+			"qq": strconv.FormatInt(qq, 10),
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Reply(messageId *onebot.MessageReceipt) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "reply",
+		Data: map[string]string{
+			"message_id": messageId.String(),
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Dice(value int64) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "dice",
+		Data: map[string]string{
+			"value": strconv.FormatInt(value, 10),
+		},
+	})
+	return msg
+}
