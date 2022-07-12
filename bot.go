@@ -3,6 +3,7 @@ package pbbot
 import (
 	"encoding/json"
 	"errors"
+	"sync"
 
 	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 	"github.com/2mf8/go-pbbot-for-rq/util"
@@ -17,7 +18,8 @@ var Bots = make(map[int64]*Bot)
 type Bot struct {
 	BotId         int64
 	Session       *SafeWebSocket
-	WaitingFrames chan *promise.Promise
+	WaitingFrames map[string]*promise.Promise
+	Lock          sync.RWMutex
 }
 
 func NewBot(botId int64, conn *websocket.Conn) *Bot {
@@ -57,7 +59,8 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 	bot := &Bot{
 		BotId:         botId,
 		Session:       safeWs,
-		WaitingFrames: make(chan *promise.Promise, 100),
+		WaitingFrames: make(map[string]*promise.Promise),
+		Lock:          sync.RWMutex{},
 	}
 	Bots[botId] = bot
 	HandleConnect(bot)
@@ -118,11 +121,21 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		log.Errorf("unknown frame type: %+v", frame.FrameType)
 		return
 	}
+	bot.Lock.RLock()
+	p, ok := bot.WaitingFrames[frame.Echo]
+	if !ok {
+		log.Errorf("failed to find waiting frame")
+		return
+	}
+	if err := p.Resolve(frame); err != nil {
+		log.Errorf("failed to resolve waiting frame promise")
+		return
+	}
 }
 
 func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	frame.BotId = bot.BotId
-	//frame.Echo = util.GenerateIdStr()
+	frame.Echo = util.GenerateIdStr()
 	frame.Ok = true
 	data, err := proto.Marshal(frame)
 	if err != nil {
@@ -130,7 +143,8 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	}
 	bot.Session.Send(websocket.BinaryMessage, data)
 	p := promise.NewPromise()
-	bot.WaitingFrames <- p
+	bot.Lock.Lock()
+	bot.WaitingFrames[frame.Echo] = p
 	resp, err, timeout := p.GetOrTimeout(120000)
 	if err != nil || timeout {
 		return nil, err
@@ -139,8 +153,9 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	if !ok {
 		return nil, errors.New("failed to convert promise result to resp frame")
 	}
-	<- bot.WaitingFrames
-	return respFrame, nil 
+	bot.Lock.Lock()
+	delete(bot.WaitingFrames, frame.Echo)
+	return respFrame, nil
 }
 
 func (bot *Bot) SendPrivateMessage(userId int64, msg *Msg, autoEscape bool) (*onebot.SendPrivateMsgResp, error) {
@@ -461,14 +476,14 @@ func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error
 	}
 }
 
-func (bot *Bot) SendMsg(groupId, userId int64, msg *Msg, autoEscape bool)(*onebot.SendMsgResp, error){
+func (bot *Bot) SendMsg(groupId, userId int64, msg *Msg, autoEscape bool) (*onebot.SendMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSendMsgReq,
 		Data: &onebot.Frame_SendMsgReq{
 			SendMsgReq: &onebot.SendMsgReq{
-				UserId: userId,
-				GroupId: groupId,
-				Message: msg.MessageList,
+				UserId:     userId,
+				GroupId:    groupId,
+				Message:    msg.MessageList,
 				AutoEscape: autoEscape,
 			},
 		},
