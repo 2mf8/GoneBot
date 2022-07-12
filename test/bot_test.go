@@ -24,7 +24,7 @@ func TestBotServer(t *testing.T) {
 		userId := event.UserId
 		display := event.Sender.Card
 		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
-		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
+		bot.SendGroupMessage(groupId, replyMsg, false)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		if err := pbbot.UpgradeWebsocket(w, req); err != nil {
