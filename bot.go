@@ -3,7 +3,6 @@ package pbbot
 import (
 	"encoding/json"
 	"errors"
-	"sync"
 
 	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 	"github.com/2mf8/go-pbbot-for-rq/util"
@@ -19,7 +18,6 @@ type Bot struct {
 	BotId         int64
 	Session       *SafeWebSocket
 	WaitingFrames map[string]*promise.Promise
-	Lock          sync.RWMutex
 }
 
 func NewBot(botId int64, conn *websocket.Conn) *Bot {
@@ -60,7 +58,6 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 		BotId:         botId,
 		Session:       safeWs,
 		WaitingFrames: make(map[string]*promise.Promise),
-		Lock:          sync.RWMutex{},
 	}
 	Bots[botId] = bot
 	HandleConnect(bot)
@@ -121,7 +118,6 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		log.Errorf("unknown frame type: %+v", frame.FrameType)
 		return
 	}
-	bot.Lock.RLock()
 	p, ok := bot.WaitingFrames[frame.Echo]
 	if !ok {
 		log.Errorf("failed to find waiting frame")
@@ -143,8 +139,8 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	}
 	bot.Session.Send(websocket.BinaryMessage, data)
 	p := promise.NewPromise()
-	bot.Lock.Lock()
 	bot.WaitingFrames[frame.Echo] = p
+	defer delete(bot.WaitingFrames, frame.Echo)
 	resp, err, timeout := p.GetOrTimeout(120000)
 	if err != nil || timeout {
 		return nil, err
@@ -153,8 +149,6 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	if !ok {
 		return nil, errors.New("failed to convert promise result to resp frame")
 	}
-	bot.Lock.Lock()
-	delete(bot.WaitingFrames, frame.Echo)
 	return respFrame, nil
 }
 
