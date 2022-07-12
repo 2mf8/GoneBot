@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-
+	"strings"
 	"github.com/2mf8/go-pbbot-for-rq"
 	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 )
@@ -22,11 +22,19 @@ func TestBotServer(t *testing.T) {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
 		userId := event.UserId
+		messageId := event.MessageId
 		display := event.Sender.Card
 		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
-		bot.SendGroupMessage(groupId, replyMsg, false)
+		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
+		if rawMsg == "撤回" && IsAdmin(bot, groupId, userId) {
+			bot.DeleteMsg(messageId)
+		}
+		if IsAdmin(bot, groupId, userId) {
+			r := pbbot.NewMsg().Text(rawMsg)
+			bot.SendGroupMessage(groupId, r, false)
+		}
 	}
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/ws/rq/", func(w http.ResponseWriter, req *http.Request) {
 		if err := pbbot.UpgradeWebsocket(w, req); err != nil {
 			fmt.Println("创建机器人失败")
 		}
@@ -35,4 +43,12 @@ func TestBotServer(t *testing.T) {
 		panic(err)
 	}
 	select {}
+}
+
+func IsAdmin(bot *pbbot.Bot, groupId, userId int64) bool {
+	memberInfo, _ := bot.GetGroupMemberInfo(groupId, userId, true)
+	if strings.ToLower(memberInfo.Role) == "admin" || strings.ToLower(memberInfo.Role) == "owner" {
+		return true
+	}
+	return false
 }

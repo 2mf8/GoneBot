@@ -1,8 +1,6 @@
 package pbbot
 
 import (
-	"sync"
-
 	"github.com/2mf8/go-pbbot-for-rq/util"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -14,7 +12,6 @@ type SafeWebSocket struct {
 	SendChannel   chan *WebSocketSendingMessage
 	OnRecvMessage func(messageType int, data []byte)
 	OnClose       func(int, string)
-	Lock          sync.RWMutex
 }
 
 type WebSocketSendingMessage struct {
@@ -35,7 +32,6 @@ func NewSafeWebSocket(conn *websocket.Conn, OnRecvMessage func(messageType int, 
 		SendChannel:   make(chan *WebSocketSendingMessage, 100),
 		OnRecvMessage: OnRecvMessage,
 		OnClose:       onClose,
-		Lock: sync.RWMutex{},
 	}
 
 	conn.SetCloseHandler(func(code int, text string) error {
@@ -45,7 +41,6 @@ func NewSafeWebSocket(conn *websocket.Conn, OnRecvMessage func(messageType int, 
 
 	// 接受消息
 	util.SafeGo(func() {
-		ws.Lock.RLock()
 		for {
 			messageType, data, err := conn.ReadMessage()
 			if err != nil {
@@ -63,7 +58,6 @@ func NewSafeWebSocket(conn *websocket.Conn, OnRecvMessage func(messageType int, 
 
 	// 发送消息
 	util.SafeGo(func() {
-		ws.Lock.Lock()
 		for sendingMessage := range ws.SendChannel {
 			if ws.Conn == nil {
 				log.Errorf("failed to send websocket message, conn is nil")
