@@ -29,10 +29,6 @@ func TestBotServer(t *testing.T) {
 		if rawMsg == "撤回" && IsAdmin(bot, groupId, userId) {
 			bot.DeleteMsg(messageId)
 		}
-		if IsAdmin(bot, groupId, userId) {
-			r := pbbot.NewMsg().Text(rawMsg)
-			bot.SendGroupMessage(groupId, r, false)
-		}
 	}
 	http.HandleFunc("/ws/rq/", func(w http.ResponseWriter, req *http.Request) {
 		if err := pbbot.UpgradeWebsocket(w, req); err != nil {
