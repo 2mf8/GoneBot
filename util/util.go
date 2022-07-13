@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var GlobalId int64 = 1
+var GlobalId int64 = 0
 
 func SafeGo(fn func()) {
 	go func() {

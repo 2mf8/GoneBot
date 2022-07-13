@@ -3,6 +3,7 @@ package pbbot
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 	"github.com/2mf8/go-pbbot-for-rq/util"
@@ -17,7 +18,11 @@ var Bots = make(map[int64]*Bot)
 type Bot struct {
 	BotId         int64
 	Session       *SafeWebSocket
-	WaitingFrames map[string]*promise.Promise
+	WaitingFramesOne map[string]*promise.Promise
+	WaitingFramesTwo map[string]*promise.Promise
+	WaitingFramesThree map[string]*promise.Promise
+	WaitingFramesFour map[string]*promise.Promise
+	WaitingFramesFive map[string]*promise.Promise
 }
 
 func NewBot(botId int64, conn *websocket.Conn) *Bot {
@@ -57,7 +62,11 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 	bot := &Bot{
 		BotId:         botId,
 		Session:       safeWs,
-		WaitingFrames: make(map[string]*promise.Promise),
+		WaitingFramesOne: make(map[string]*promise.Promise),
+		WaitingFramesTwo: make(map[string]*promise.Promise),
+		WaitingFramesThree: make(map[string]*promise.Promise),
+		WaitingFramesFour: make(map[string]*promise.Promise),
+		WaitingFramesFive: make(map[string]*promise.Promise),
 	}
 	Bots[botId] = bot
 	HandleConnect(bot)
@@ -118,14 +127,64 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		log.Errorf("unknown frame type: %+v", frame.FrameType)
 		return
 	}
-	p, ok := bot.WaitingFrames[frame.Echo]
-	if !ok {
-		log.Errorf("failed to find waiting frame")
-		return
-	}
-	if err := p.Resolve(frame); err != nil {
-		log.Errorf("failed to resolve waiting frame promise")
-		return
+	i, _ := strconv.Atoi(frame.Echo)
+	j := i % 5
+	switch j {
+		case 1: {
+			p, ok := bot.WaitingFramesOne[frame.Echo]
+			if !ok {
+				log.Errorf("failed to find waiting frame")
+				return
+			}
+			if err := p.Resolve(frame); err != nil {
+				log.Errorf("failed to resolve waiting frame promise")
+				return
+			}
+		}
+		case 2: {
+			p, ok := bot.WaitingFramesTwo[frame.Echo]
+			if !ok {
+				log.Errorf("failed to find waiting frame")
+				return
+			}
+			if err := p.Resolve(frame); err != nil {
+				log.Errorf("failed to resolve waiting frame promise")
+				return
+			}
+		}
+		case 3: {
+			p, ok := bot.WaitingFramesThree[frame.Echo]
+			if !ok {
+				log.Errorf("failed to find waiting frame")
+				return
+			}
+			if err := p.Resolve(frame); err != nil {
+				log.Errorf("failed to resolve waiting frame promise")
+				return
+			}
+		}
+		case 4: {
+			p, ok := bot.WaitingFramesFour[frame.Echo]
+			if !ok {
+				log.Errorf("failed to find waiting frame")
+				return
+			}
+			if err := p.Resolve(frame); err != nil {
+				log.Errorf("failed to resolve waiting frame promise")
+				return
+			}
+		}
+		case 0: {
+			p, ok := bot.WaitingFramesFive[frame.Echo]
+			if !ok {
+				log.Errorf("failed to find waiting frame")
+				return
+			}
+			if err := p.Resolve(frame); err != nil {
+				log.Errorf("failed to resolve waiting frame promise")
+				return
+			}
+		}
 	}
 }
 
@@ -139,8 +198,30 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	}
 	bot.Session.Send(websocket.BinaryMessage, data)
 	p := promise.NewPromise()
-	bot.WaitingFrames[frame.Echo] = p
-	defer delete(bot.WaitingFrames, frame.Echo)
+	i, _ := strconv.Atoi(frame.Echo)
+	j := i % 5
+	switch j {
+		case 1: {
+			bot.WaitingFramesOne[frame.Echo] = p
+			defer delete(bot.WaitingFramesOne, frame.Echo)
+		}
+		case 2: {
+			bot.WaitingFramesTwo[frame.Echo] = p
+			defer delete(bot.WaitingFramesTwo, frame.Echo)
+		}
+		case 3: {
+			bot.WaitingFramesThree[frame.Echo] = p
+			defer delete(bot.WaitingFramesThree, frame.Echo)
+		}
+		case 4: {
+			bot.WaitingFramesFour[frame.Echo] = p
+			defer delete(bot.WaitingFramesFour, frame.Echo)
+		}
+		case 0: {
+			bot.WaitingFramesFive[frame.Echo] = p
+			defer delete(bot.WaitingFramesFive, frame.Echo)
+		}
+	}
 	resp, err, timeout := p.GetOrTimeout(120000)
 	if err != nil || timeout {
 		return nil, err

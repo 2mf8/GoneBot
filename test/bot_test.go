@@ -2,9 +2,11 @@ package test
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"testing"
 	"strings"
+	"testing"
+
 	"github.com/2mf8/go-pbbot-for-rq"
 	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
 )
@@ -23,9 +25,11 @@ func TestBotServer(t *testing.T) {
 		groupId := event.GroupId
 		userId := event.UserId
 		messageId := event.MessageId
-		display := event.Sender.Card
-		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
-		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
+		log.Println(rawMsg)
+		if IsAdmin(bot, groupId, userId) && groupId == 706194673 {
+			replyMsg := pbbot.NewMsg().Text(rawMsg)
+			_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
+		}
 		if rawMsg == "撤回" && IsAdmin(bot, groupId, userId) {
 			bot.DeleteMsg(messageId)
 		}
