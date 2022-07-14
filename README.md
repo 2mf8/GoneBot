@@ -1,4 +1,4 @@
-# go-pbbot-for-rq
+# GoPbBot
 
 使用方法
 
@@ -8,8 +8,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/2mf8/go-pbbot-for-rq"
-	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
+	"github.com/2mf8/GoPbBot"
+	"github.com/2mf8/GoPbBot/proto_gen/onebot"
 	"github.com/gin-gonic/gin"
 )
 

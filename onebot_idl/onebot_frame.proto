@@ -2,6 +2,7 @@ syntax = "proto3";
 package onebot;
 import "onebot_api.proto";
 import "onebot_event.proto";
+option go_package="./onebot";
 
 message Frame{
     int64 bot_id = 1;
@@ -63,6 +64,8 @@ message Frame{
         SetRestartReq set_restart_req = 237;
         CleanCacheReq clean_cache_req = 238;
         SetGroupSignInReq set_group_sign_in_req = 239;
+        SetGroupPokeReq set_group_poke_req =  240;
+        SetFriendPokeReq set_friend_poke_req = 241;
 
         SendPrivateMsgResp send_private_msg_resp = 301;
         SendGroupMsgResp send_group_msg_resp = 302;
@@ -103,6 +106,8 @@ message Frame{
         SetRestartResp set_restart_resp = 337;
         CleanCacheResp clean_cache_resp = 338;
         SetGroupSignInResp set_group_sign_in_resp = 339;
+        SetGroupPokeResp set_group_poke_resp = 340;
+        SetFriendPokeResp set_friend_poke_resp = 341;
     }
 
     enum FrameType{
@@ -160,7 +165,8 @@ message Frame{
         TSetRestartReq = 237;
         TCleanCacheReq = 238;
         TSetGroupSignInReq = 239;
-
+        TSetGroupPokeReq = 240;
+        TSetFriendPokeReq =241;
 
         TSendPrivateMsgResp = 301;
         TSendGroupMsgResp = 302;
@@ -201,5 +207,7 @@ message Frame{
         TSetRestartResp = 337;
         TCleanCacheResp = 338;
         TSetGroupSignInResp = 339;
+        TSetGroupPokeResp = 340;
+        TSetFriendPokeResp = 341;
     }
 }

@@ -1,7 +1,7 @@
 package pbbot
 
 import (
-	"github.com/2mf8/go-pbbot-for-rq/util"
+	"github.com/2mf8/GoPbBot/util"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package onebot;
 import "onebot_base.proto";
-
+option go_package="./onebot";
 
 message SendPrivateMsgReq{
     int64 user_id = 1;
@@ -401,4 +401,20 @@ message SetGroupSignInReq{
     int64 group_id = 1;
 }
 message SetGroupSignInResp{
+}
+
+message SetGroupPokeReq{
+    int64 to_uin = 1;
+    int64 group_id = 2;
+}
+
+message SetGroupPokeResp{
+}
+
+message SetFriendPokeReq{
+    int64 to_uin = 1;
+    int64 aio_uin = 2;
+}
+
+message SetFriendPokeResp{
 }

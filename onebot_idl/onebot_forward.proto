@@ -1,6 +1,7 @@
 syntax = "proto3";
 package onebot;
 import "onebot_base.proto";
+option go_package="./onebot";
 
 message ForwardMessageNode{
   repeated Message message = 1;

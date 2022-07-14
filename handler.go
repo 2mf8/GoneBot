@@ -1,7 +1,7 @@
 package pbbot
 
 import (
-	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
+	"github.com/2mf8/GoPbBot/proto_gen/onebot"
 )
 
 // HandleConnect 机器人连接

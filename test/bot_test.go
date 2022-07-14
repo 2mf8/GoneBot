@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/2mf8/go-pbbot-for-rq"
-	"github.com/2mf8/go-pbbot-for-rq/proto_gen/onebot"
+	"github.com/2mf8/GoPbBot"
+	"github.com/2mf8/GoPbBot/proto_gen/onebot"
 )
 
 func TestBotServer(t *testing.T) {
@@ -29,9 +29,6 @@ func TestBotServer(t *testing.T) {
 		if IsAdmin(bot, groupId, userId) && groupId == 706194673 {
 			replyMsg := pbbot.NewMsg().Text(rawMsg)
 			_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
-		}
-		if rawMsg == "撤回" && IsAdmin(bot, groupId, userId) {
-			bot.DeleteMsg(messageId)
 		}
 	}
 	http.HandleFunc("/ws/rq/", func(w http.ResponseWriter, req *http.Request) {

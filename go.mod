@@ -1,4 +1,4 @@
-module github.com/2mf8/go-pbbot-for-rq
+module github.com/2mf8/GoPbBot
 
 go 1.18
 
