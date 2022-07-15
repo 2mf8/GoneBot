@@ -134,6 +134,10 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		HandleGroupRequest(bot, event)
 		return
 	}
+	if event := frame.GetChannelMessageEvent(); event != nil {
+		HandleChannelMessage(bot, event)
+		return
+	}
 
 	if frame.FrameType < 300 {
 		log.Errorf("unknown frame type: %+v", frame.FrameType)
@@ -519,5 +523,23 @@ func (bot *Bot) SetFriendPoke(toUin int64) (*onebot.SetFriendPokeResp, error){
 		return nil, err
 	} else {
 		return resp.GetSetFriendPokeResp(), nil
+	}
+}
+
+func(bot *Bot) SendChannelMessage(guildId, channelId uint64, msg *Msg, autoEscape bool) (*onebot.SendChannelMsgResp, error){
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSendChannelMsgReq,
+		Data: &onebot.Frame_SendChannelMsgReq{
+			SendChannelMsgReq: &onebot.SendChannelMsgReq{
+				GuildId: guildId,
+				ChannelId: channelId,
+				Message: msg.MessageList,
+				AutoEscape: autoEscape,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetSendChannelMsgResp(), nil
 	}
 }

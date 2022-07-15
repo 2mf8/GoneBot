@@ -24,6 +24,11 @@ var HandleGroupMessage = func(bot *Bot, event *onebot.GroupMessageEvent) {
 
 }
 
+// HandleChannelMessage 收到频道消息
+var HandleChannelMessage = func(bot *Bot, event *onebot.ChannelMessageEvent){
+
+}
+
 // HandleGroupUploadNotice 有人上传群文件
 var HandleGroupUploadNotice = func(bot *Bot, event *onebot.GroupUploadNoticeEvent) {
 

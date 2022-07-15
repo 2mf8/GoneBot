@@ -18,6 +18,16 @@ func TestBotServer(t *testing.T) {
 		}
 	}
 
+	pbbot.HandleChannelMessage = func(bot *pbbot.Bot, event *onebot.ChannelMessageEvent) {
+		guildId := event.GuildId
+		channelId := event.ChannelId
+		userId := event.Sender.TinyId
+		display := event.Sender.Nickname
+		rawMsg := event.RawMessage
+		replyMsg := pbbot.NewMsg().Text("hello world").At(int64(userId), display).Text("你发送了:" + rawMsg)
+		_, _ = bot.SendChannelMessage(guildId, channelId, replyMsg, false)
+	}
+
 	pbbot.HandleGroupMessage = func(bot *pbbot.Bot, event *onebot.GroupMessageEvent) {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
