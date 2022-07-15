@@ -490,3 +490,34 @@ func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error
 		return resp.GetSetGroupSignInResp(), nil
 	}
 }
+
+func (bot *Bot) SetGroupPoke(toUin, groupId int64) (*onebot.SetGroupPokeResp, error){
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSetGroupPokeReq,
+		Data: &onebot.Frame_SetGroupPokeReq{
+			SetGroupPokeReq: &onebot.SetGroupPokeReq{
+				ToUin: toUin,
+				GroupId: groupId,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetSetGroupPokeResp(), nil
+	}
+}
+
+func (bot *Bot) SetFriendPoke(toUin int64) (*onebot.SetFriendPokeResp, error){
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSetFriendPokeReq,
+		Data: &onebot.Frame_SetFriendPokeReq{
+			SetFriendPokeReq: &onebot.SetFriendPokeReq{
+				ToUin: toUin,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetSetFriendPokeResp(), nil
+	}
+}
