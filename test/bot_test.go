@@ -2,11 +2,9 @@ package test
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"testing"
-
 	"github.com/2mf8/GoPbBot"
 	"github.com/2mf8/GoPbBot/proto_gen/onebot"
 )
@@ -24,12 +22,9 @@ func TestBotServer(t *testing.T) {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
 		userId := event.UserId
-		messageId := event.MessageId
-		log.Println(rawMsg)
-		if IsAdmin(bot, groupId, userId) && groupId == 706194673 {
-			replyMsg := pbbot.NewMsg().Text(rawMsg)
-			_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
-		}
+		display := event.Sender.Card
+		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
+		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
 	}
 	http.HandleFunc("/ws/rq/", func(w http.ResponseWriter, req *http.Request) {
 		if err := pbbot.UpgradeWebsocket(w, req); err != nil {

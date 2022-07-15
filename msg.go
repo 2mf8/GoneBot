@@ -57,7 +57,27 @@ func (msg *Msg) At(qq int64, display string) *Msg {
 	return msg
 }
 
-func (msg *Msg) LightApp(content string) *Msg{
+func (msg *Msg) AtAll() *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "at",
+		Data: map[string]string{
+			"qq": "all",
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Record(url string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "record",
+		Data: map[string]string{
+			"url": url,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) LightApp(content string) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "light_app",
 		Data: map[string]string{
@@ -102,6 +122,84 @@ func (msg *Msg) Dice(value int64) *Msg {
 		Type: "dice",
 		Data: map[string]string{
 			"value": strconv.FormatInt(value, 10),
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) SignIn() *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "sign_in",
+		Data: map[string]string{},
+	})
+	return msg
+}
+
+func (msg *Msg) Flash(url string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "image",
+		Data: map[string]string{
+			"url":  url,
+			"type": "flash",
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Share(url string, title string, content string, image string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "share",
+		Data: map[string]string{
+			"url":     url,
+			"title":   title,
+			"content": content,
+			"image":   image,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Json(id int, content string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "service",
+		Data: map[string]string{
+			"sub_type": "json",
+			"id":       strconv.Itoa(id),
+			"content":  content,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Xml(id int, content string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "service",
+		Data: map[string]string{
+			"sub_type": "xml",
+			"id":       strconv.Itoa(id),
+			"content":  content,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Video(url string, cover string, cache bool) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "video",
+		Data: map[string]string{
+			"url":   url,
+			"cover": cover,
+			"cache": strconv.FormatBool(cache),
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Sleep(time int64) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "sleep",
+		Data: map[string]string{
+			"time": strconv.FormatInt(time, 10),
 		},
 	})
 	return msg
