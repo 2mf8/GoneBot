@@ -204,3 +204,14 @@ func (msg *Msg) Sleep(time int64) *Msg {
 	})
 	return msg
 }
+
+func (msg *Msg) ChannelAt(qq uint64, display string) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "at",
+		Data: map[string]string{
+			"qq": strconv.FormatUint(qq, 10),
+			"display": display,
+		},
+	})
+	return msg
+}
