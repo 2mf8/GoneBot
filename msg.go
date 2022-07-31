@@ -46,17 +46,6 @@ func (msg *Msg) Image(url string) *Msg {
 	return msg
 }
 
-func (msg *Msg) GuildImage(fileName, url string) *Msg{
-	msg.MessageList = append(msg.MessageList, &onebot.Message{
-		Type: "guild_image",
-		Data: map[string]string{
-			"file": fileName,
-			"url": url,
-		},
-	})
-	return msg
-}
-
 func (msg *Msg) At(qq int64, display string) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "at",
