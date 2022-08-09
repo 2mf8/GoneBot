@@ -78,3 +78,7 @@ var HandleFriendRequest = func(bot *Bot, event *onebot.FriendRequestEvent) {
 var HandleGroupRequest = func(bot *Bot, event *onebot.GroupRequestEvent) {
 
 }
+
+var HandleGroupNotify = func(bot *Bot, event *onebot.GroupNotifyEvent){
+	
+}

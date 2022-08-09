@@ -18,6 +18,10 @@ func TestBotServer(t *testing.T) {
 		}
 	}
 
+	pbbot.HandleGroupNotify = func(bot *pbbot.Bot, event *onebot.GroupNotifyEvent) {
+		fmt.Println(event.GroupId, event.NoticeType, event.Sender, event.TargetId)
+	}
+
 	pbbot.HandleChannelMessage = func(bot *pbbot.Bot, event *onebot.ChannelMessageEvent) {
 		guildId := event.GuildId
 		channelId := event.ChannelId

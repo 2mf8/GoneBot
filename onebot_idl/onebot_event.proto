@@ -59,6 +59,30 @@ message GroupMessageEvent{
     map<string, string> extra = 255;
 }
 
+message ChannelMessageEvent{
+    uint64 id = 1;
+    uint64 internal_id = 2;
+    uint64 guild_id = 3;
+    uint64 channel_id = 4;
+    int64 time = 5;
+    int64 self_id = 6;
+    string post_type = 7;
+    string message_type = 8;
+    string sub_type = 9;
+    repeated Message message = 10;
+    string raw_message = 11;
+    int32 font = 12;
+    Sender sender = 13;
+    uint64 message_id = 14;
+    message Sender{
+        uint64 tiny_id = 1;
+        string nickname = 2;
+        repeated uint64 roles = 3;
+        repeated string role_names =4;
+    }
+    map<string, string> extra = 255;
+}
+
 message GroupUploadNoticeEvent{
     int64 time = 1;
     int64 self_id = 2;
@@ -75,6 +99,20 @@ message GroupUploadNoticeEvent{
         string url = 5;
     }
     map<string, string> extra = 255;
+}
+
+message GroupNotifyEvent{
+    int64 time = 1;
+    int64 self_id = 2;
+    string post_type = 3;
+    string notice_type = 4;
+    int64 group_id = 5;
+    string group_name = 6;
+    int64 sender = 7;
+    string sender_card = 8;
+    int64 target_id = 9;
+    string target_card = 10;
+    string honor = 11;
 }
 
 message GroupAdminNoticeEvent{

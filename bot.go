@@ -138,6 +138,9 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		HandleChannelMessage(bot, event)
 		return
 	}
+	if event := frame.GetGroupNotifyEvent(); event != nil {
+		HandleGroupNotify(bot, event)
+	}
 
 	if frame.FrameType < 300 {
 		log.Errorf("unknown frame type: %+v", frame.FrameType)
