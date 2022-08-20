@@ -107,7 +107,7 @@ func (msg *Msg) Poke(qq int64) *Msg {
 	return msg
 }
 
-// GMC专用
+// GMC专用 
 func (msg *Msg) Reply(messageId int32) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "reply",
