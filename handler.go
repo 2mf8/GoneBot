@@ -79,6 +79,12 @@ var HandleGroupRequest = func(bot *Bot, event *onebot.GroupRequestEvent) {
 
 }
 
+// HandleGroupNotify 收到群通知
 var HandleGroupNotify = func(bot *Bot, event *onebot.GroupNotifyEvent){
 	
+}
+
+// HandleGroupTempMessage 收到群临时消息
+var HandleGroupTempMessage = func(bot *Bot, event *onebot.GroupTempMessageEvent){
+
 }

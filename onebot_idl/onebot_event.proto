@@ -9,13 +9,13 @@ message PrivateMessageEvent{
     string post_type = 3;
     string message_type = 4;
     string sub_type = 5;
-//    int32 message_id = 6; // 废弃
+    int32 message_id = 6;
     int64 user_id = 7;
     repeated Message message = 8;
     string raw_message = 9;
     int32 font = 10;
     Sender sender = 11;
-    MessageReceipt message_id = 12;
+    MessageReceipt message_receipt = 12;
     message Sender{
         int64 user_id = 1;
         string nickname = 2;
@@ -31,7 +31,7 @@ message GroupMessageEvent{
     string post_type = 3;
     string message_type = 4;
     string sub_type = 5;
-//    int32 message_id = 6; // 废弃
+    int32 message_id = 6;
     int64 group_id = 7;
     int64 user_id = 8;
     Anonymous anonymous = 9;
@@ -39,7 +39,7 @@ message GroupMessageEvent{
     string raw_message = 11;
     int32 font = 12;
     Sender sender = 13;
-    MessageReceipt message_id = 14;
+    MessageReceipt message_receipt = 14;
     message Anonymous{
         int64 id = 1;
         string name = 2;
@@ -80,6 +80,20 @@ message ChannelMessageEvent{
         repeated uint64 roles = 3;
         repeated string role_names =4;
     }
+    map<string, string> extra = 255;
+}
+
+message GroupTempMessageEvent{
+    int64 time = 1;
+    int64 self_id = 2;
+    string post_type = 3;
+    string message_type = 4;
+    int64 group_id = 7;
+    int64 user_id = 8;
+    repeated Message message = 10;
+    string raw_message = 11;
+    MessageReceipt message_receipt = 14;
+    int32 message_id = 15;
     map<string, string> extra = 255;
 }
 
@@ -180,8 +194,8 @@ message GroupRecallNoticeEvent{
     int64 group_id = 5;
     int64 user_id = 6;
     int64 operator_id = 7;
-//    int32 message_id = 8; // 废弃
-    MessageReceipt message_id = 9;
+    int32 message_id = 8;
+    MessageReceipt message_receipt = 9;
     map<string, string> extra = 255;
 }
 
@@ -191,8 +205,8 @@ message FriendRecallNoticeEvent{
     string post_type = 3;
     string notice_type = 4;
     int64 user_id = 5;
-//    int32 message_id = 6; // 废弃
-    MessageReceipt message_id = 7;
+    int32 message_id = 6;
+    MessageReceipt message_receipt = 7;
     map<string, string> extra = 255;
 }
 

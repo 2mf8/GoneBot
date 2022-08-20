@@ -107,11 +107,11 @@ func (msg *Msg) Poke(qq int64) *Msg {
 	return msg
 }
 
-func (msg *Msg) Reply(messageId *onebot.MessageReceipt) *Msg {
+func (msg *Msg) Reply(messageId int32) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "reply",
 		Data: map[string]string{
-			"message_id": messageId.String(),
+			"message_id": strconv.Itoa(int(messageId)),
 		},
 	})
 	return msg

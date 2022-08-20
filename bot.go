@@ -140,6 +140,11 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 	}
 	if event := frame.GetGroupNotifyEvent(); event != nil {
 		HandleGroupNotify(bot, event)
+		return
+	}
+	if event := frame.GetGroupTempMessageEvent(); event != nil {
+		HandleGroupTempMessage(bot, event)
+		return
 	}
 
 	if frame.FrameType < 300 {
@@ -214,12 +219,29 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) DeleteMsg(messageId *onebot.MessageReceipt) (*onebot.DeleteMsgResp, error) {
+// GMC专用
+func (bot *Bot) DeleteMsg(messageId int32) (*onebot.DeleteMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TDeleteMsgReq,
 		Data: &onebot.Frame_DeleteMsgReq{
 			DeleteMsgReq: &onebot.DeleteMsgReq{
 				MessageId: messageId,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetDeleteMsgResp(), nil
+	}
+}
+
+// GMC 1.1.0 以上版本和pbrq皆可用
+func (bot *Bot) DeleteMsgByReceipt(messageReceipt *onebot.MessageReceipt) (*onebot.DeleteMsgResp, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TDeleteMsgReq,
+		Data: &onebot.Frame_DeleteMsgReq{
+			DeleteMsgReq: &onebot.DeleteMsgReq{
+				MessageReceipt: messageReceipt,
 			},
 		},
 	}); err != nil {
@@ -498,45 +520,45 @@ func (bot *Bot) SetGroupSignIn(groupId int64) (*onebot.SetGroupSignInResp, error
 	}
 }
 
-func (bot *Bot) SetGroupPoke(toUin, groupId int64) (*onebot.SetGroupPokeResp, error){
+func (bot *Bot) SendGroupPoke(toUin, groupId int64) (*onebot.SendGroupPokeResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
-		FrameType: onebot.Frame_TSetGroupPokeReq,
-		Data: &onebot.Frame_SetGroupPokeReq{
-			SetGroupPokeReq: &onebot.SetGroupPokeReq{
-				ToUin: toUin,
+		FrameType: onebot.Frame_TSendGroupPokeReq,
+		Data: &onebot.Frame_SendGroupPokeReq{
+			SendGroupPokeReq: &onebot.SendGroupPokeReq{
+				ToUin:   toUin,
 				GroupId: groupId,
 			},
 		},
 	}); err != nil {
 		return nil, err
 	} else {
-		return resp.GetSetGroupPokeResp(), nil
+		return resp.GetSendGroupPokeResp(), nil
 	}
 }
 
-func (bot *Bot) SetFriendPoke(toUin int64) (*onebot.SetFriendPokeResp, error){
+func (bot *Bot) SendFriendPoke(toUin int64) (*onebot.SendFriendPokeResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
-		FrameType: onebot.Frame_TSetFriendPokeReq,
-		Data: &onebot.Frame_SetFriendPokeReq{
-			SetFriendPokeReq: &onebot.SetFriendPokeReq{
+		FrameType: onebot.Frame_TSendFriendPokeReq,
+		Data: &onebot.Frame_SendFriendPokeReq{
+			SendFriendPokeReq: &onebot.SendFriendPokeReq{
 				ToUin: toUin,
 			},
 		},
 	}); err != nil {
 		return nil, err
 	} else {
-		return resp.GetSetFriendPokeResp(), nil
+		return resp.GetSendFriendPokeResp(), nil
 	}
 }
 
-func(bot *Bot) SendChannelMessage(guildId, channelId uint64, msg *Msg, autoEscape bool) (*onebot.SendChannelMsgResp, error){
+func (bot *Bot) SendChannelMessage(guildId, channelId uint64, msg *Msg, autoEscape bool) (*onebot.SendChannelMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSendChannelMsgReq,
 		Data: &onebot.Frame_SendChannelMsgReq{
 			SendChannelMsgReq: &onebot.SendChannelMsgReq{
-				GuildId: guildId,
-				ChannelId: channelId,
-				Message: msg.MessageList,
+				GuildId:    guildId,
+				ChannelId:  channelId,
+				Message:    msg.MessageList,
 				AutoEscape: autoEscape,
 			},
 		},
@@ -544,5 +566,73 @@ func(bot *Bot) SendChannelMessage(guildId, channelId uint64, msg *Msg, autoEscap
 		return nil, err
 	} else {
 		return resp.GetSendChannelMsgResp(), nil
+	}
+}
+
+/*
+	 *  发送群音乐
+     *
+     *  groupId 群号
+     *  musicType 音乐类型 qq、164、migu、kugou、kuwo
+     *  title 标题
+     *  brief 简介
+     *  summary 概览
+     *  url 链接
+     *  pictureUrl 图片链接
+     *  musicUrl 音乐链接
+*/
+func (bot *Bot) SendGroupMusic(groupId int64, musicType string, title string, brief string, summary string, url string, pictureUrl string, musicUrl string) (*onebot.SendMusicResp, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSendMusicReq,
+		Data: &onebot.Frame_SendMusicReq{
+			SendMusicReq: &onebot.SendMusicReq{
+				GroupId:    groupId,
+				Type:       musicType,
+				Title:      title,
+				Brief:      brief,
+				Summary:    summary,
+				Url:        url,
+				PictureUrl: pictureUrl,
+				MusicUrl:   musicUrl,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetSendMusicResp(), nil
+	}
+}
+
+/*
+	 *  发送好友音乐
+     *
+     *  userId 用户Id
+     *  musicType 音乐类型 qq、164、migu、kugou、kuwo
+     *  title 标题
+     *  brief 简介
+     *  summary 概览
+     *  url 链接
+     *  pictureUrl 图片链接
+     *  musicUrl 音乐链接
+*/
+func (bot *Bot) SendFriendMusic(userId int64, musicType string, title string, brief string, summary string, url string, pictureUrl string, musicUrl string) (*onebot.SendMusicResp, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		FrameType: onebot.Frame_TSendMusicReq,
+		Data: &onebot.Frame_SendMusicReq{
+			SendMusicReq: &onebot.SendMusicReq{
+				UserId:     userId,
+				Type:       musicType,
+				Title:      title,
+				Brief:      brief,
+				Summary:    summary,
+				Url:        url,
+				PictureUrl: pictureUrl,
+				MusicUrl:   musicUrl,
+			},
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp.GetSendMusicResp(), nil
 	}
 }

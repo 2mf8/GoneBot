@@ -9,8 +9,8 @@ message SendPrivateMsgReq{
     bool auto_escape = 3;
 }
 message SendPrivateMsgResp{
-//    int32 message_id = 1; // 废弃
-    MessageReceipt message_id = 2;
+    int32 message_id = 1;
+    MessageReceipt message_receipt = 2;
 }
 
 message SendGroupMsgReq{
@@ -20,8 +20,8 @@ message SendGroupMsgReq{
 }
 
 message SendGroupMsgResp{
-//    int32 message_id = 1; // 废弃
-    MessageReceipt message_id = 2;
+    int32 message_id = 1;
+    MessageReceipt message_receipt = 2;
 }
 
 message SendChannelMsgReq{
@@ -43,13 +43,13 @@ message SendMsgReq{
     bool auto_escape = 5;
 }
 message SendMsgResp{
-//    int32 message_id = 1; // 废弃
-    MessageReceipt message_id = 2;
+    int32 message_id = 1;
+    MessageReceipt message_receipt = 2;
 }
 
 message DeleteMsgReq{
-//    int32 message_id = 1;
-    MessageReceipt message_id = 2;
+    int32 message_id = 1;
+    MessageReceipt message_receipt = 2;
 }
 message DeleteMsgResp{
 }
@@ -415,18 +415,32 @@ message SetGroupSignInReq{
 message SetGroupSignInResp{
 }
 
-message SetGroupPokeReq{
+message SendMusicReq{
+    int64 group_id = 1;
+    int64 user_id = 2;
+    string type = 3;
+    string title = 4;
+    string brief = 5;
+    string summary = 6;
+    string url = 7;
+    string picture_url = 8;
+    string music_url = 9;
+}
+message SendMusicResp{
+}
+
+message SendGroupPokeReq{
     int64 to_uin = 1;
     int64 group_id = 2;
 }
 
-message SetGroupPokeResp{
+message SendGroupPokeResp{
 }
 
-message SetFriendPokeReq{
+message SendFriendPokeReq{
     int64 to_uin = 1;
     int64 aio_uin = 2;
 }
 
-message SetFriendPokeResp{
+message SendFriendPokeResp{
 }

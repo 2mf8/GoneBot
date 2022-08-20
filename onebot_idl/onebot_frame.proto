@@ -24,8 +24,9 @@ message Frame{
         FriendRecallNoticeEvent friend_recall_notice_event = 110;
         FriendRequestEvent friend_request_event = 111;
         GroupRequestEvent  group_request_event = 112;
-        ChannelMessageEvent channel_message_event = 113;
+        GroupTempMessageEvent  group_temp_message_event = 113;
         GroupNotifyEvent group_notify_event = 114;
+        ChannelMessageEvent channel_message_event = 115;
 
         SendPrivateMsgReq send_private_msg_req = 201;
         SendGroupMsgReq send_group_msg_req = 202;
@@ -66,9 +67,10 @@ message Frame{
         SetRestartReq set_restart_req = 237;
         CleanCacheReq clean_cache_req = 238;
         SetGroupSignInReq set_group_sign_in_req = 239;
-        SetGroupPokeReq set_group_poke_req =  240;
-        SetFriendPokeReq set_friend_poke_req = 241;
-        SendChannelMsgReq send_channel_msg_req = 242;
+        SendMusicReq send_music_req = 240;
+        SendGroupPokeReq send_group_poke_req = 241;
+        SendFriendPokeReq send_friend_poke_req = 242;
+        SendChannelMsgReq send_channel_msg_req = 243;
 
         SendPrivateMsgResp send_private_msg_resp = 301;
         SendGroupMsgResp send_group_msg_resp = 302;
@@ -109,9 +111,10 @@ message Frame{
         SetRestartResp set_restart_resp = 337;
         CleanCacheResp clean_cache_resp = 338;
         SetGroupSignInResp set_group_sign_in_resp = 339;
-        SetGroupPokeResp set_group_poke_resp = 340;
-        SetFriendPokeResp set_friend_poke_resp = 341;
-        SendChannelMsgResp send_channel_msg_resp = 342;
+        SendMusicResp send_music_resp = 340;
+        SendGroupPokeResp send_group_poke_resp = 341;
+        SendFriendPokeResp send_friend_poke_resp = 342;
+        SendChannelMsgResp send_channel_msg_resp = 343;
     }
 
     enum FrameType{
@@ -129,8 +132,9 @@ message Frame{
         TFriendRecallNoticeEvent = 110;
         TFriendRequestEvent = 111;
         TGroupRequestEvent = 112;
-        TChannelMessageEvent = 113;
+        TGroupTempMessageEvent = 113;
         TGroupNotifyEvent = 114;
+        TChannelMessageEvent = 115;
 
         TSendPrivateMsgReq = 201;
         TSendGroupMsgReq = 202;
@@ -171,9 +175,10 @@ message Frame{
         TSetRestartReq = 237;
         TCleanCacheReq = 238;
         TSetGroupSignInReq = 239;
-        TSetGroupPokeReq = 240;
-        TSetFriendPokeReq = 241;
-        TSendChannelMsgReq = 242;
+        TSendMusicReq = 240;
+        TSendGroupPokeReq = 241;
+        TSendFriendPokeReq = 242;
+        TSendChannelMsgReq = 243;
 
         TSendPrivateMsgResp = 301;
         TSendGroupMsgResp = 302;
@@ -214,8 +219,9 @@ message Frame{
         TSetRestartResp = 337;
         TCleanCacheResp = 338;
         TSetGroupSignInResp = 339;
-        TSetGroupPokeResp = 340;
-        TSetFriendPokeResp = 341;
-        TSendChannelMsgResp = 342;
+        TSendMusicResp = 340;
+        TSendGroupPokeResp = 341;
+        TSendFriendPokeResp = 342;
+        TSendChannelMsgResp = 343;
     }
 }

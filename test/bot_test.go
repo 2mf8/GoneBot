@@ -38,6 +38,7 @@ func TestBotServer(t *testing.T) {
 		groupId := event.GroupId
 		userId := event.UserId
 		display := event.Sender.Card
+		bot.DeleteMsg(event.MessageId)
 		replyMsg := pbbot.NewMsg().Text("hello world").At(userId, display).Text("你发送了:" + rawMsg)
 		_, _ = bot.SendGroupMessage(groupId, replyMsg, false)
 	}
