@@ -107,11 +107,23 @@ func (msg *Msg) Poke(qq int64) *Msg {
 	return msg
 }
 
+// GMC专用
 func (msg *Msg) Reply(messageId int32) *Msg {
 	msg.MessageList = append(msg.MessageList, &onebot.Message{
 		Type: "reply",
 		Data: map[string]string{
 			"message_id": strconv.Itoa(int(messageId)),
+		},
+	})
+	return msg
+}
+
+// GMC 1.1.0 以上版本和pbrq皆可用
+func (msg *Msg) ReplyByMessageReceipt(messageId *onebot.MessageReceipt) *Msg {
+	msg.MessageList = append(msg.MessageList, &onebot.Message{
+		Type: "reply",
+		Data: map[string]string{
+			"message_id": messageId.String(),
 		},
 	})
 	return msg
