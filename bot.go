@@ -2,18 +2,20 @@ package pbbot
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"sync"
+	"time"
 
-	"github.com/2mf8/GoPbBot/proto_gen/onebot"
+	"github.com/2mf8/GoPbBot/onebot"
 	"github.com/2mf8/GoPbBot/util"
 	"github.com/fanliao/go-promise"
-	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
 
 var Bots = make(map[int64]*Bot)
+var mresp = &onebot.SendMsgResponse{}
+var echo = ""
 
 type Bot struct {
 	BotId         int64
@@ -25,18 +27,22 @@ type Bot struct {
 func NewBot(botId int64, conn *websocket.Conn) *Bot {
 	messageHandler := func(messageType int, data []byte) {
 		var frame onebot.Frame
-		if messageType == websocket.BinaryMessage {
-			err := proto.Unmarshal(data, &frame)
-			if err != nil {
-				log.Errorf("failed to unmarshal websocket binary message, err: %+v", err)
-				return
-			}
-		} else if messageType == websocket.TextMessage {
+		nullframe := onebot.Frame{}
+		if messageType == websocket.TextMessage {
 			err := json.Unmarshal(data, &frame)
 			if err != nil {
 				log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
 				return
 			}
+			if frame == nullframe {
+				err = json.Unmarshal(data, &mresp)
+				if err != nil {
+					log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
+					return
+				}
+				return
+			}
+
 		} else {
 			log.Errorf("invalid websocket messageType: %+v", messageType)
 			return
@@ -48,7 +54,7 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 			return
 		}
 		util.SafeGo(func() {
-			bot.handleFrame(&frame)
+			bot.handleFrame(&frame, data)
 		})
 	}
 	closeHandler := func(code int, message string) {
@@ -85,15 +91,150 @@ func (bot *Bot) delWaitingFrame(key string) {
 	delete(bot.WaitingFrames, key)
 }
 
-func (bot *Bot) handleFrame(frame *onebot.Frame) {
-	if event := frame.GetPrivateMessageEvent(); event != nil {
-		HandlePrivateMessage(bot, event)
+func (bot *Bot) handleFrame(frame *onebot.Frame, data []byte) {
+	if frame.PostType == onebot.Message && frame.MessageType == string(onebot.Private) {
+		pm := &onebot.PrivateMsgEvent{}
+		err := json.Unmarshal(data, pm)
+		fmt.Println(err)
+		if err == nil {
+			HandlePrivateMessage(bot, pm)
+		}
 		return
 	}
-	if event := frame.GetGroupMessageEvent(); event != nil {
-		HandleGroupMessage(bot, event)
+	if frame.PostType == onebot.Message && frame.MessageType == string(onebot.Group) {
+		gm := &onebot.GroupMsgEvent{}
+		err := json.Unmarshal(data, gm)
+		fmt.Println(err)
+		if err == nil {
+			HandleGroupMessage(bot, gm)
+		}
 		return
 	}
+	p, ok := bot.getWaitingFrame(echo)
+	if !ok {
+		return
+	}
+	if err := p.Resolve(frame); err != nil {
+		log.Errorf("failed to resolve waiting frame promise")
+		return
+	}
+}
+
+func (bot *Bot) sendFrameAndWait(frame *onebot.Frame, api *onebot.API) (*onebot.SendMsgResponse, error) {
+	frame.BotId = bot.BotId
+	echo = fmt.Sprintf("%v", time.Now().UnixNano())
+	frame.Ok = true
+	data, err := json.Marshal(api)
+	if err != nil {
+		return nil, err
+	}
+	bot.Session.Send(websocket.BinaryMessage, data)
+	p := promise.NewPromise()
+	bot.setWaitingFrame(echo, p)
+	defer bot.delWaitingFrame(echo)
+	_, err, timeout := p.GetOrTimeout(120000)
+	if err != nil || timeout {
+		return nil, err
+	}
+	if mresp.Status == "ok" {
+		return mresp, nil
+	}
+	return nil, nil
+}
+
+func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.SendGroupMsg),
+		Params: &onebot.Params{
+			GroupId:    groupId,
+			Message:    msg.IMessageList,
+			AutoEscape: autoEscape,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+func (bot *Bot) SetGroupBan(groupId int64, userId int64, duration int32) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.SetGroupBan),
+		Params: &onebot.Params{
+			GroupId:  groupId,
+			UserId:   userId,
+			Duration: duration,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+func (bot *Bot) SetGroupKick(groupId int64, userId int64, rejectAddRequest bool) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.SetGroupKick),
+		Params: &onebot.Params{
+			GroupId:          groupId,
+			UserId:           userId,
+			RejectAddRequest: rejectAddRequest,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+func (bot *Bot) SetGroupLeave(groupId int64, isDismiss bool) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.SetGroupLeave),
+		Params: &onebot.Params{
+			GroupId:   groupId,
+			IsDismiss: isDismiss,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+func (bot *Bot) SetWholeBan(groupId int64, enable bool) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.SetGroupWholeBan),
+		Params: &onebot.Params{
+			GroupId: groupId,
+			Enable:  enable,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+func (bot *Bot) DeleteMsg(msgId int32) (*onebot.SendMsgResponse, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{}, &onebot.API{
+		Action: string(onebot.DeleteMsg),
+		Params: &onebot.Params{
+			MessageId: msgId,
+		},
+		Echo: echo,
+	}); err != nil {
+		return nil, err
+	} else {
+		return resp, nil
+	}
+}
+
+/*
 	if event := frame.GetGroupUploadNoticeEvent(); event != nil {
 		HandleGroupUploadNotice(bot, event)
 		return
@@ -161,30 +302,7 @@ func (bot *Bot) handleFrame(frame *onebot.Frame) {
 		return
 	}
 }
-
-func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
-	frame.BotId = bot.BotId
-	frame.Echo = util.GenerateIdStr()
-	frame.Ok = true
-	data, err := proto.Marshal(frame)
-	if err != nil {
-		return nil, err
-	}
-	bot.Session.Send(websocket.BinaryMessage, data)
-	p := promise.NewPromise()
-	bot.setWaitingFrame(frame.Echo, p)
-	defer bot.delWaitingFrame(frame.Echo)
-	resp, err, timeout := p.GetOrTimeout(120000)
-	if err != nil || timeout {
-		return nil, err
-	}
-	respFrame, ok := resp.(*onebot.Frame)
-	if !ok {
-		return nil, errors.New("failed to convert promise result to resp frame")
-	}
-	return respFrame, nil
-}
-
+/*
 func (bot *Bot) SendPrivateMessage(userId int64, msg *Msg, autoEscape bool) (*onebot.SendPrivateMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSendPrivateMsgReq,
@@ -202,22 +320,7 @@ func (bot *Bot) SendPrivateMessage(userId int64, msg *Msg, autoEscape bool) (*on
 	}
 }
 
-func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*onebot.SendGroupMsgResp, error) {
-	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
-		FrameType: onebot.Frame_TSendGroupMsgReq,
-		Data: &onebot.Frame_SendGroupMsgReq{
-			SendGroupMsgReq: &onebot.SendGroupMsgReq{
-				GroupId:    groupId,
-				Message:    msg.MessageList,
-				AutoEscape: autoEscape,
-			},
-		},
-	}); err != nil {
-		return nil, err
-	} else {
-		return resp.GetSendGroupMsgResp(), nil
-	}
-}
+
 
 // GMC专用
 func (bot *Bot) DeleteMsg(messageId int32) (*onebot.DeleteMsgResp, error) {
@@ -580,7 +683,7 @@ func (bot *Bot) SendChannelMessage(guildId, channelId uint64, msg *Msg, autoEsca
      *  url 链接
      *  pictureUrl 图片链接
      *  musicUrl 音乐链接
-*/
+*/ /*
 func (bot *Bot) SendGroupMusic(groupId int64, musicType string, title string, brief string, summary string, url string, pictureUrl string, musicUrl string) (*onebot.SendMusicResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSendMusicReq,
@@ -614,7 +717,7 @@ func (bot *Bot) SendGroupMusic(groupId int64, musicType string, title string, br
      *  url 链接
      *  pictureUrl 图片链接
      *  musicUrl 音乐链接
-*/
+*/ /*
 func (bot *Bot) SendFriendMusic(userId int64, musicType string, title string, brief string, summary string, url string, pictureUrl string, musicUrl string) (*onebot.SendMusicResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		FrameType: onebot.Frame_TSendMusicReq,
@@ -635,4 +738,4 @@ func (bot *Bot) SendFriendMusic(userId int64, musicType string, title string, br
 	} else {
 		return resp.GetSendMusicResp(), nil
 	}
-}
+}*/

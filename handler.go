@@ -1,8 +1,6 @@
 package pbbot
 
-import (
-	"github.com/2mf8/GoPbBot/proto_gen/onebot"
-)
+import "github.com/2mf8/GoPbBot/onebot"
 
 // HandleConnect 机器人连接
 var HandleConnect = func(bot *Bot) {
@@ -15,17 +13,18 @@ var HandleDisconnect = func(bot *Bot) {
 }
 
 // HandlePrivateMessage 收到私聊消息
-var HandlePrivateMessage = func(bot *Bot, event *onebot.PrivateMessageEvent) {
+var HandlePrivateMessage = func(bot *Bot, event *onebot.PrivateMsgEvent) {
 
 }
 
 // HandleGroupMessage 收到群聊消息
-var HandleGroupMessage = func(bot *Bot, event *onebot.GroupMessageEvent) {
+var HandleGroupMessage = func(bot *Bot, event *onebot.GroupMsgEvent) {
 
 }
 
+/*
 // HandleChannelMessage 收到频道消息
-var HandleChannelMessage = func(bot *Bot, event *onebot.ChannelMessageEvent){
+var HandleChannelMessage = func(bot *Bot, event *onebot.ChannelMessageEvent) {
 
 }
 
@@ -80,11 +79,12 @@ var HandleGroupRequest = func(bot *Bot, event *onebot.GroupRequestEvent) {
 }
 
 // HandleGroupNotify 收到群通知
-var HandleGroupNotify = func(bot *Bot, event *onebot.GroupNotifyEvent){
-	
+var HandleGroupNotify = func(bot *Bot, event *onebot.GroupNotifyEvent) {
+
 }
 
 // HandleGroupTempMessage 收到群临时消息
-var HandleGroupTempMessage = func(bot *Bot, event *onebot.GroupTempMessageEvent){
+var HandleGroupTempMessage = func(bot *Bot, event *onebot.GroupTempMessageEvent) {
 
 }
+*/
