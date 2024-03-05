@@ -25,7 +25,7 @@ const (
 	GetLoginInfo         ActionType = "get_login_info"
 	GetStrangerInfo      ActionType = "get_stranger_info"
 	GetFriendList        ActionType = "get_friend_list"
-	GetFroupInfo         ActionType = "get_group_info"
+	GetGroupInfo         ActionType = "get_group_info"
 	GetGroupList         ActionType = "get_group_list"
 	GetGroupMemberInfo   ActionType = "get_group_member_info"
 	GetGroupMemberList   ActionType = "get_group_member_list"
@@ -77,7 +77,6 @@ type Params struct {
 	Delay            int32       `json:"delay,omitempty"`
 }
 
-// {"status":"ok","retcode":0,"data":{"message_id":528925193},"echo":"1709455334"}
 type SendMsgResponse struct {
 	Status  string               `json:"status,omitempty"`
 	RetCode int32                `json:"retcode,omitempty"`
@@ -87,3 +86,65 @@ type SendMsgResponseData struct {
 	MessageId int32  `json:"message_id,omitempty"`
 	Echo      string `json:"echo,omitempty"`
 }
+
+type GetGroupMemberInfoReq struct {
+	GroupId int64 `json:"group_id,omitempty"`
+	UserId  int64 `json:"user_id,omitempty"`
+	NoCache bool  `json:"no_cache,omitempty"`
+}
+
+type GetGroupMemberInfoResp struct {
+	Status  string           `json:"status,omitempty"`
+	RetCode int32            `json:"retcode,omitempty"`
+	Data    *GroupMemberInfo `json:"data,omitempty"`
+	Echo    string           `json:"echo,omitempty"`
+}
+
+type GroupMemberInfo struct {
+	GroupId         int64   `json:"group_id,omitempty"`
+	UserId          int64   `json:"user_id,omitempty"`
+	Nickname        string  `json:"nickname,omitempty"`
+	Card            string  `json:"card,omitempty"`
+	Sex             SexType `json:"sex,omitempty"`
+	Age             int32   `json:"age,omitempty"`
+	Area            string  `json:"area,omitempty"`
+	JoinTime        int64   `json:"join_time,omitempty"`
+	LastSentTime    int64   `json:"last_sent_time,omitempty"`
+	Level           string  `json:"level,omitempty"`
+	Role            string  `json:"role,omitempty"`
+	UnFriendly      bool    `json:"unfriendly,omitempty"`
+	Title           string  `json:"title,omitempty"`
+	TitleExpireTime int64   `json:"title_expire_time,omitempty"`
+	CardChangeable  bool    `json:"card_changeable,omitempty"`
+}
+
+type GetGroupInfoReq struct {
+	GroupId int64 `json:"group_id,omitempty"`
+	NoCache bool  `json:"no_cache,omitempty"`
+}
+
+type GetGroupInfoResp struct {
+	Status  string     `json:"status,omitempty"`
+	RetCode int32      `json:"retcode,omitempty"`
+	Data    *GroupInfo `json:"data,omitempty"`
+	Echo    string     `json:"echo,omitempty"`
+}
+
+type GroupInfo struct {
+	GroupId        int64  `json:"group_id,omitempty"`
+	GroupName      string `json:"group_name,omitempty"`
+	MemberCount    int32  `json:"member_count,omitempty"`
+	MaxMemberCount int32  `json:"max_member_count,omitempty"`
+}
+
+type SetGroupBanResp struct{}
+
+type SetGroupKickResp struct{}
+
+type SetGroupLeaveResp struct{}
+
+type SetGroupWholeBanResp struct{}
+
+type DeleteMsgResp struct{}
+
+

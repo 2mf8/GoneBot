@@ -77,15 +77,15 @@ type Anonymous struct {
 }
 
 type GroupSender struct {
-	UserId   int64   `json:"user_id,omitempty"`
-	Nickname string  `json:"nickname,omitempty"`
-	Card     string  `json:"card,omitempty"`
-	Sex      SexType `json:"sex,omitempty"`
-	Age      int32   `json:"age,omitempty"`
-	Area     string  `json:"area,omitempty"`
-	Level    string  `json:"level,omitempty"`
-	Role     string  `json:"role,omitempty"`
-	Title    string  `json:"title,omitempty"`
+	UserId   int64  `json:"user_id,omitempty"`
+	Nickname string `json:"nickname,omitempty"`
+	Card     string `json:"card,omitempty"`
+	Sex      string `json:"sex,omitempty"`
+	Age      int32  `json:"age,omitempty"`
+	Area     string `json:"area,omitempty"`
+	Level    string `json:"level,omitempty"`
+	Role     string `json:"role,omitempty"`
+	Title    string `json:"title,omitempty"`
 }
 type GroupMsgEvent struct {
 	Event
