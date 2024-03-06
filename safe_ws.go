@@ -1,7 +1,7 @@
-package pbbot
+package gonebot
 
 import (
-	"github.com/2mf8/GoPbBot/util"
+	"github.com/2mf8/GoneBot/util"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )

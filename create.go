@@ -1,4 +1,4 @@
-package pbbot
+package gonebot
 
 import (
 	"net/http"

@@ -1,9 +1,9 @@
-package pbbot
+package gonebot
 
 import (
 	"strconv"
 
-	"github.com/2mf8/GoPbBot/onebot"
+	"github.com/2mf8/GoneBot/onebot"
 )
 
 type Msg struct {

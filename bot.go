@@ -1,4 +1,4 @@
-package pbbot
+package gonebot
 
 import (
 	"encoding/json"
@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/2mf8/GoPbBot/onebot"
-	"github.com/2mf8/GoPbBot/util"
+	"github.com/2mf8/GoneBot/onebot"
+	"github.com/2mf8/GoneBot/util"
 	"github.com/fanliao/go-promise"
 	"github.com/gorilla/websocket"
 	"github.com/jefferyjob/go-easy-utils/v2/anyUtil"
@@ -256,7 +256,7 @@ func (bot *Bot) DeleteMsg(msgId int32) (*onebot.DeleteMsgResp, error) {
 	}
 }
 
-func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot.GetGroupMemberInfoResp, error) {
+func (bot *Bot) GetGroupMemberInfo(url string, groupId, userId int64, noCache bool) (*onebot.GetGroupMemberInfoResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.GetGroupMemberInfo),
@@ -303,7 +303,7 @@ func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot
 	}
 }
 
-func (bot *Bot) GetGroupInfo(groupId int64, noCache bool) (*onebot.GetGroupInfoResp, error) {
+func (bot *Bot) GetGroupInfo(url string, groupId int64, noCache bool) (*onebot.GetGroupInfoResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.GetGroupInfo),

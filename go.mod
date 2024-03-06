@@ -1,4 +1,4 @@
-module github.com/2mf8/GoPbBot
+module github.com/2mf8/GoneBot
 
 go 1.22
 
