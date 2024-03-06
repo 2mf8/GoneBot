@@ -256,7 +256,7 @@ func (bot *Bot) DeleteMsg(msgId int32) (*onebot.DeleteMsgResp, error) {
 	}
 }
 
-func (bot *Bot) GetGroupMemberInfo(url string, groupId, userId int64, noCache bool) (*onebot.GetGroupMemberInfoResp, error) {
+func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot.GetGroupMemberInfoResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.GetGroupMemberInfo),
@@ -303,7 +303,7 @@ func (bot *Bot) GetGroupMemberInfo(url string, groupId, userId int64, noCache bo
 	}
 }
 
-func (bot *Bot) GetGroupInfo(url string, groupId int64, noCache bool) (*onebot.GetGroupInfoResp, error) {
+func (bot *Bot) GetGroupInfo(groupId int64, noCache bool) (*onebot.GetGroupInfoResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.GetGroupInfo),
