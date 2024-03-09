@@ -55,10 +55,10 @@ type Params struct {
 	Message          []*IMessage `json:"message,omitempty"`
 	MessageType      string      `json:"message_type,omitempty"`
 	AutoEscape       bool        `json:"auto_escape,omitempty"`
-	MessageId        int32       `json:"message_id,omitempty"`
+	MessageId        int64       `json:"message_id,omitempty"`
 	Id               string      `json:"id,omitempty"`
 	RejectAddRequest bool        `json:"reject_add_request,omitempty"`
-	Duration         int32       `json:"duration,omitempty"`
+	Duration         int64       `json:"duration,omitempty"`
 	Enable           bool        `json:"enable,omitempty"`
 	Card             string      `json:"card,omitempty"`
 	GroupName        string      `json:"group_name,omitempty"`
@@ -83,14 +83,8 @@ type SendMsgResponse struct {
 	Data    *SendMsgResponseData `json:"data,omitempty"`
 }
 type SendMsgResponseData struct {
-	MessageId int32  `json:"message_id,omitempty"`
+	MessageId int64  `json:"message_id,omitempty"`
 	Echo      string `json:"echo,omitempty"`
-}
-
-type GetGroupMemberInfoReq struct {
-	GroupId int64 `json:"group_id,omitempty"`
-	UserId  int64 `json:"user_id,omitempty"`
-	NoCache bool  `json:"no_cache,omitempty"`
 }
 
 type GetGroupMemberInfoResp struct {
@@ -118,11 +112,6 @@ type GroupMemberInfo struct {
 	CardChangeable  bool    `json:"card_changeable,omitempty"`
 }
 
-type GetGroupInfoReq struct {
-	GroupId int64 `json:"group_id,omitempty"`
-	NoCache bool  `json:"no_cache,omitempty"`
-}
-
 type GetGroupInfoResp struct {
 	Status  string     `json:"status,omitempty"`
 	RetCode int32      `json:"retcode,omitempty"`
@@ -146,5 +135,3 @@ type SetGroupLeaveResp struct{}
 type SetGroupWholeBanResp struct{}
 
 type DeleteMsgResp struct{}
-
-

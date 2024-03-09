@@ -6,12 +6,18 @@ type PrivateSubEventType string
 type GroupSubEventType string
 type SexType string
 type NoticeType string
+type MetaEventType string
+type HonorType string
+type ReqType string
 
 const (
 	Message   PostType = "message"
 	Notice    PostType = "notice"
 	Request   PostType = "request"
 	MetaEvent PostType = "meta_event"
+
+	LifeCycle MetaEventType = "lifecycle"
+	HeartBeat MetaEventType = "heartbeat"
 
 	Private MsgEventType = "private"
 	Group   MsgEventType = "group"
@@ -23,6 +29,18 @@ const (
 	SubNormal    GroupSubEventType = "normal"
 	SubAnonymous GroupSubEventType = "anonymous"
 	SubNotice    GroupSubEventType = "notice"
+	SetAdmin     GroupSubEventType = "set"
+	RemoveAdmin  GroupSubEventType = "unset"
+	Leave        GroupSubEventType = "leave"   // 主动退群
+	Kick         GroupSubEventType = "kick"    // 成员被踢
+	KickMe       GroupSubEventType = "kick_me" // 登录号被踢
+	Approve      GroupSubEventType = "approve" // 管理员已同意入群
+	Invite       GroupSubEventType = "invite"  // 管理员邀请入群
+	Ban          GroupSubEventType = "ban"
+	LiftBan      GroupSubEventType = "lift_ban"
+	Poke         GroupSubEventType = "poke"
+	LuckyKing    GroupSubEventType = "lucky_king"
+	Honor        GroupSubEventType = "honor"
 
 	Male    SexType = "male"
 	Female  SexType = "female"
@@ -37,7 +55,13 @@ const (
 	GroupRecall   NoticeType = "group_recall"
 	FriendRecall  NoticeType = "friend_recall"
 	Notify        NoticeType = "notify"
-	LuckyKing     NoticeType = "lucky_king"
+
+	Talkative HonorType = "talkative"
+	Performer HonorType = "performer"
+	Emotion   HonorType = "emotion"
+
+	FriendAddRequest        ReqType = "friend"
+	GroupAddOrInviteRequest ReqType = "group"
 )
 
 type Event struct {
@@ -57,7 +81,7 @@ type PrivateMsgEvent struct {
 	Event
 	MessageType string         `json:"message_type,omitempty"`
 	SubType     string         `json:"sub_type,omitempty"`
-	MessageId   int32          `json:"message_id,omitempty"`
+	MessageId   int64          `json:"message_id,omitempty"`
 	UserId      int64          `json:"user_id,omitempty"`
 	Message     []*IMessage    `json:"message,omitempty"`
 	RawMessage  string         `json:"raw_message,omitempty"`
@@ -91,7 +115,7 @@ type GroupMsgEvent struct {
 	Event
 	MessageType string       `json:"message_type,omitempty"`
 	SubType     string       `json:"sub_type,omitempty"`
-	MessageId   int32        `json:"message_id,omitempty"`
+	MessageId   int64        `json:"message_id,omitempty"`
 	GroupId     int64        `json:"group_id,omitempty"`
 	UserId      int64        `json:"user_id,omitempty"`
 	Anonymous   *Anonymous   `json:"anonymous,omitempty"`
@@ -107,7 +131,7 @@ type GroupQuickOperate struct {
 	Delete      bool   `json:"delete,omitempty"`
 	Kick        bool   `json:"kick,omitempty"`
 	Ban         bool   `json:"ban,omitempty"`
-	BanDuration int32  `json:"ban_duration,omitempty"`
+	BanDuration int64  `json:"ban_duration,omitempty"`
 }
 
 type File struct {
@@ -116,7 +140,32 @@ type File struct {
 	Size int64  `json:"size,omitempty"`
 }
 
-type GroupUploadEvent struct {
+type IMessage struct {
+	Type string            `json:"type,omitempty"`
+	Data map[string]string `json:"data,omitempty"`
+}
+
+type LifeTime struct {
+	Event
+	MetaEventType string `json:"meta_event_type"`
+	SubType       string `json:"sub_type"`
+}
+
+type BotHeartBeat struct {
+	Event
+	MetaEventType string           `json:"meta_event_type"`
+	Status        *HeartBeatStatus `json:"status,omitempty"`
+}
+
+type HeartBeatStatus struct {
+	AppInitialized bool `json:"app_initialized,omitempty"`
+	AppEnabled     bool `json:"app_enabled,omitempty"`
+	AppGood        bool `json:"app_good,omitempty"`
+	Online         bool `json:"online,omitempty"`
+	Good           bool `json:"good,omitempty"`
+}
+
+type GroupUploadNoticeEvent struct {
 	Event
 	NoticeType NoticeType  `json:"notice_type,omitempty"`
 	GroupId    int64       `json:"group_id,omitempty"`
@@ -131,7 +180,105 @@ type UploadFile struct {
 	BusId int64  `json:"busid,omitempty"`
 }
 
-type IMessage struct {
-	Type string            `json:"type,omitempty"`
-	Data map[string]string `json:"data,omitempty"`
+type GroupAdminChangeNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+}
+
+type GroupMemberDecreaseNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	OperatorId int64      `json:"operator_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+}
+
+type GroupMemberIncreaseNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	OperatorId int64      `json:"operator_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+}
+
+type GroupBanNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	OperatorId int64      `json:"operator_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+	Duration   int64      `json:"duration,omitempty"`
+}
+
+type FriendAddNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+}
+
+type GroupMsgRecallNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	OperatorId int64      `json:"operator_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+	MessageId  int64      `json:"message_id,omitempty"`
+}
+
+type FriendMsgRecallNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+	MessageId  int64      `json:"message_id,omitempty"`
+}
+
+type GroupPokeNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+	TargetId   int64      `json:"target_id,omitempty"`
+}
+
+type GroupLuckyKingNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+	TargetId   int64      `json:"target_id,omitempty"`
+}
+
+type GroupMemberHonorChangeNoticeEvent struct {
+	Event
+	NoticeType NoticeType `json:"notice_type,omitempty"`
+	SubType    string     `json:"sub_type,omitempty"`
+	GroupId    int64      `json:"group_id,omitempty"`
+	HonorType  HonorType  `json:"honor_type,omitempty"`
+	UserId     int64      `json:"user_id,omitempty"`
+}
+
+type FriendAddRequestEvent struct {
+	Event
+	RequestType string `json:"request_type,omitempty"`
+	UserId      int64  `json:"user_id,omitempty"`
+	Comment     string `json:"comment,omitempty"`
+	Flag        string `json:"flag,omitempty"`
+}
+
+type GroupAddOrInviteRequestEvent struct {
+	Event
+	RequestType string `json:"request_type,omitempty"`
+	SubType     string `json:"sub_type,omitempty"`
+	GroupId     int64  `json:"group_id,omitempty"`
+	UserId      int64  `json:"user_id,omitempty"`
+	Comment     string `json:"comment,omitempty"`
+	Flag        string `json:"flag,omitempty"`
 }

@@ -149,7 +149,7 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}); err != nil {
 		return nil, err
 	} else {
-		i, err := anyUtil.AnyToInt32(resp.Data["message_id"])
+		i, err := anyUtil.AnyToInt64(resp.Data["message_id"])
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +165,7 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) SetGroupBan(groupId int64, userId int64, duration int32) (*onebot.SetGroupBanResp, error) {
+func (bot *Bot) SetGroupBan(groupId int64, userId int64, duration int64) (*onebot.SetGroupBanResp, error) {
 	if _, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.SetGroupBan),
@@ -239,7 +239,7 @@ func (bot *Bot) SetGroupWholeBan(groupId int64, enable bool) (*onebot.SetGroupWh
 	}
 }
 
-func (bot *Bot) DeleteMsg(msgId int32) (*onebot.DeleteMsgResp, error) {
+func (bot *Bot) DeleteMsg(msgId int64) (*onebot.DeleteMsgResp, error) {
 	if _, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.DeleteMsg),

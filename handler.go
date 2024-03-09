@@ -22,29 +22,23 @@ var HandleGroupMessage = func(bot *Bot, event *onebot.GroupMsgEvent) {
 
 }
 
-/*
-// HandleChannelMessage 收到频道消息
-var HandleChannelMessage = func(bot *Bot, event *onebot.ChannelMessageEvent) {
-
-}
-
 // HandleGroupUploadNotice 有人上传群文件
 var HandleGroupUploadNotice = func(bot *Bot, event *onebot.GroupUploadNoticeEvent) {
 
 }
 
 // HandleGroupAdminNotice 群管理员变动
-var HandleGroupAdminNotice = func(bot *Bot, event *onebot.GroupAdminNoticeEvent) {
+var HandleGroupAdminNotice = func(bot *Bot, event *onebot.GroupAdminChangeNoticeEvent) {
 
 }
 
 // HandleGroupDecreaseNotice 群人数减少 有人退群或被踢
-var HandleGroupDecreaseNotice = func(bot *Bot, event *onebot.GroupDecreaseNoticeEvent) {
+var HandleGroupDecreaseNotice = func(bot *Bot, event *onebot.GroupMemberDecreaseNoticeEvent) {
 
 }
 
 // HandleGroupIncreaseNotice 群人数增加
-var HandleGroupIncreaseNotice = func(bot *Bot, event *onebot.GroupIncreaseNoticeEvent) {
+var HandleGroupIncreaseNotice = func(bot *Bot, event *onebot.GroupMemberIncreaseNoticeEvent) {
 
 }
 
@@ -59,32 +53,26 @@ var HandleFriendAddNotice = func(bot *Bot, event *onebot.FriendAddNoticeEvent) {
 }
 
 // HandleGroupRecallNotice 群消息撤回
-var HandleGroupRecallNotice = func(bot *Bot, event *onebot.GroupRecallNoticeEvent) {
+var HandleGroupRecallNotice = func(bot *Bot, event *onebot.GroupMsgRecallNoticeEvent) {
 
 }
 
 // HandleFriendRecallNotice 好友消息撤回
-var HandleFriendRecallNotice = func(bot *Bot, event *onebot.FriendRecallNoticeEvent) {
+var HandleFriendRecallNotice = func(bot *Bot, event *onebot.FriendMsgRecallNoticeEvent) {
 
 }
 
 // HandleFriendRequest 收到好友请求
-var HandleFriendRequest = func(bot *Bot, event *onebot.FriendRequestEvent) {
+var HandleFriendRequest = func(bot *Bot, event *onebot.FriendAddRequestEvent) {
 
 }
 
 // HandleGroupRequest 收到加群请求
-var HandleGroupRequest = func(bot *Bot, event *onebot.GroupRequestEvent) {
+var HandleGroupRequest = func(bot *Bot, event *onebot.GroupAddOrInviteRequestEvent) {
 
 }
 
 // HandleGroupNotify 收到群通知
-var HandleGroupNotify = func(bot *Bot, event *onebot.GroupNotifyEvent) {
+var HandleGroupNotify = func(bot *Bot, event *onebot.GroupMemberHonorChangeNoticeEvent) {
 
 }
-
-// HandleGroupTempMessage 收到群临时消息
-var HandleGroupTempMessage = func(bot *Bot, event *onebot.GroupTempMessageEvent) {
-
-}
-*/
