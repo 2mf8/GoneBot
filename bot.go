@@ -344,6 +344,28 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
+func (bot *Bot) SendForwardMsg(msg *Msg) (*onebot.SendForwardMsgResp, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.SendForwardMsg),
+			Params: &onebot.Params{
+				Message: msg.IMessageList,
+			},
+			Echo: echo,
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		sfm := &onebot.SendForwardMsgResp{
+			Status:  anyUtil.AnyToStr(resp.Status),
+			RetCode: resp.Code,
+			Data:    anyUtil.AnyToStr(resp.Data),
+			Echo:    resp.Echo,
+		}
+		return sfm, nil
+	}
+}
+
 func (bot *Bot) SetGroupBan(groupId int64, userId int64, duration int64) (*onebot.SetGroupBanResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{

@@ -80,6 +80,9 @@ type Params struct {
 	Times            int32       `json:"times,omitempty"`
 	Anonymous        *Anonymous  `json:"anonymous,omitempty"`
 	AnonymousFlag    string      `json:"anonymous_flag,omitempty"`
+	Name             string      `json:"name,omitempty"`
+	Uin              string      `json:"uin,omitempty"`
+	Content          string      `json:"content,omitempty"`
 }
 
 type SendMsgResponse struct {
@@ -442,5 +445,12 @@ type CleanCacheResp struct {
 	Status  string `json:"status,omitempty"`
 	RetCode int32  `json:"retcode,omitempty"`
 	Data    any    `json:"data,omitempty"`
+	Echo    string `json:"echo,omitempty"`
+}
+
+type SendForwardMsgResp struct {
+	Status  string `json:"status,omitempty"`
+	RetCode int32  `json:"retcode,omitempty"`
+	Data    string `json:"data,omitempty"`
 	Echo    string `json:"echo,omitempty"`
 }
