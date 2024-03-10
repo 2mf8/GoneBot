@@ -73,6 +73,22 @@ var HandleGroupRequest = func(bot *Bot, event *onebot.GroupAddOrInviteRequestEve
 }
 
 // HandleGroupNotify 收到群通知
-var HandleGroupNotify = func(bot *Bot, event *onebot.GroupMemberHonorChangeNoticeEvent) {
+var HandleGroupMemberHonorChangeNotify = func(bot *Bot, event *onebot.GroupMemberHonorChangeNoticeEvent) {
+
+}
+var HandleGroupLuckyKingNotify = func(bot *Bot, event *onebot.GroupLuckyKingNoticeEvent) {
+
+}
+var HandleGroupPokeNotify = func(bot *Bot, event *onebot.GroupPokeNoticeEvent) {
+
+}
+
+// HandleLifeTime 收到生命周期
+var HandleLifeTime = func(bot *Bot, event *onebot.LifeTime) {
+
+}
+
+// HandleHeartBeat 收到机器人心跳
+var HandleHeartBeat = func(bot *Bot, event *onebot.BotHeartBeat) {
 
 }

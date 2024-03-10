@@ -84,23 +84,168 @@ func (bot *Bot) delWaitingFrame(key string) {
 }
 
 func (bot *Bot) handleFrame(frame *onebot.Frame, data []byte) {
-	if frame.PostType == onebot.Message && frame.MessageType == string(onebot.Private) {
-		pm := &onebot.PrivateMsgEvent{}
-		err := json.Unmarshal(data, pm)
-		fmt.Println(err)
-		if err == nil {
-			HandlePrivateMessage(bot, pm)
+	if frame.PostType == onebot.MetaEvent {
+		if frame.MetaEventType == string(onebot.LifeCycle) {
+			lc := &onebot.LifeTime{}
+			err := json.Unmarshal(data, lc)
+			fmt.Println(err)
+			if err == nil {
+				HandleLifeTime(bot, lc)
+			}
+			return
 		}
-		return
+		if frame.MetaEventType == string(onebot.HeartBeat) {
+			hb := &onebot.BotHeartBeat{}
+			err := json.Unmarshal(data, hb)
+			fmt.Println(err)
+			if err == nil {
+				HandleHeartBeat(bot, hb)
+			}
+			return
+		}
 	}
-	if frame.PostType == onebot.Message && frame.MessageType == string(onebot.Group) {
-		gm := &onebot.GroupMsgEvent{}
-		err := json.Unmarshal(data, gm)
-		fmt.Println(err)
-		if err == nil {
-			HandleGroupMessage(bot, gm)
+	if frame.PostType == onebot.Message {
+		if frame.MessageType == string(onebot.Private) {
+			pm := &onebot.PrivateMsgEvent{}
+			err := json.Unmarshal(data, pm)
+			fmt.Println(err)
+			if err == nil {
+				HandlePrivateMessage(bot, pm)
+			}
+			return
 		}
-		return
+		if frame.MessageType == string(onebot.Group) {
+			gm := &onebot.GroupMsgEvent{}
+			err := json.Unmarshal(data, gm)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupMessage(bot, gm)
+			}
+			return
+		}
+	}
+	if frame.PostType == onebot.Notice {
+		if frame.NoticeType == string(onebot.GroupAdmin) {
+			ga := &onebot.GroupAdminChangeNoticeEvent{}
+			err := json.Unmarshal(data, ga)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupAdminNotice(bot, ga)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.GroupUpload) {
+			gu := &onebot.GroupUploadNoticeEvent{}
+			err := json.Unmarshal(data, gu)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupUploadNotice(bot, gu)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.GroupDecrease) {
+			gd := &onebot.GroupMemberDecreaseNoticeEvent{}
+			err := json.Unmarshal(data, gd)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupDecreaseNotice(bot, gd)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.GroupIncrease) {
+			gi := &onebot.GroupMemberIncreaseNoticeEvent{}
+			err := json.Unmarshal(data, gi)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupIncreaseNotice(bot, gi)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.GroupBan) {
+			gb := &onebot.GroupBanNoticeEvent{}
+			err := json.Unmarshal(data, gb)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupBanNotice(bot, gb)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.FriendAdd) {
+			fa := &onebot.FriendAddNoticeEvent{}
+			err := json.Unmarshal(data, fa)
+			fmt.Println(err)
+			if err == nil {
+				HandleFriendAddNotice(bot, fa)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.GroupRecall) {
+			gr := &onebot.GroupMsgRecallNoticeEvent{}
+			err := json.Unmarshal(data, gr)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupRecallNotice(bot, gr)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.FriendRecall) {
+			fr := &onebot.FriendMsgRecallNoticeEvent{}
+			err := json.Unmarshal(data, fr)
+			fmt.Println(err)
+			if err == nil {
+				HandleFriendRecallNotice(bot, fr)
+			}
+			return
+		}
+		if frame.NoticeType == string(onebot.Notify) {
+			if frame.SubType == string(onebot.Honor) {
+				gmhc := &onebot.GroupMemberHonorChangeNoticeEvent{}
+				err := json.Unmarshal(data, gmhc)
+				fmt.Println(err)
+				if err == nil {
+					HandleGroupMemberHonorChangeNotify(bot, gmhc)
+				}
+				return
+			}
+			if frame.SubType == string(onebot.LuckyKing) {
+				lk := &onebot.GroupLuckyKingNoticeEvent{}
+				err := json.Unmarshal(data, lk)
+				fmt.Println(err)
+				if err == nil {
+					HandleGroupLuckyKingNotify(bot, lk)
+				}
+				return
+			}
+			if frame.SubType == string(onebot.Poke) {
+				tp := &onebot.GroupPokeNoticeEvent{}
+				err := json.Unmarshal(data, tp)
+				fmt.Println(err)
+				if err == nil {
+					HandleGroupPokeNotify(bot, tp)
+				}
+				return
+			}
+		}
+	}
+	if frame.PostType == onebot.Request {
+		if frame.RequestType == string(onebot.FriendAddRequest) {
+			faq := &onebot.FriendAddRequestEvent{}
+			err := json.Unmarshal(data, faq)
+			fmt.Println(err)
+			if err == nil {
+				HandleFriendRequest(bot, faq)
+			}
+			return
+		}
+		if frame.SubType == string(onebot.GroupAddOrInviteRequest) {
+			gaoiq := &onebot.GroupAddOrInviteRequestEvent{}
+			err := json.Unmarshal(data, gaoiq)
+			fmt.Println(err)
+			if err == nil {
+				HandleGroupRequest(bot, gaoiq)
+			}
+			return
+		}
 	}
 	p, ok := bot.getWaitingFrame(frame.Echo)
 	if !ok {
