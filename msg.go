@@ -19,7 +19,7 @@ func NewMsg() *Msg {
 func (msg *Msg) Text(text string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "text",
-		Data: map[string]string{
+		Data: map[string]any{
 			"text": text,
 		},
 	})
@@ -29,7 +29,7 @@ func (msg *Msg) Text(text string) *Msg {
 func (msg *Msg) Face(id int) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "face",
-		Data: map[string]string{
+		Data: map[string]any{
 			"id": strconv.Itoa(id),
 		},
 	})
@@ -39,7 +39,7 @@ func (msg *Msg) Face(id int) *Msg {
 func (msg *Msg) Image(url string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "image",
-		Data: map[string]string{
+		Data: map[string]any{
 			"file": url,
 		},
 	})
@@ -49,7 +49,7 @@ func (msg *Msg) Image(url string) *Msg {
 func (msg *Msg) At(qq int64, display string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "at",
-		Data: map[string]string{
+		Data: map[string]any{
 			"qq":      strconv.FormatInt(qq, 10),
 			"display": display,
 		},
@@ -60,7 +60,7 @@ func (msg *Msg) At(qq int64, display string) *Msg {
 func (msg *Msg) AtAll() *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "at",
-		Data: map[string]string{
+		Data: map[string]any{
 			"qq": "all",
 		},
 	})
@@ -70,8 +70,8 @@ func (msg *Msg) AtAll() *Msg {
 func (msg *Msg) Record(url string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "record",
-		Data: map[string]string{
-			"url": url,
+		Data: map[string]any{
+			"file": url,
 		},
 	})
 	return msg
@@ -80,7 +80,7 @@ func (msg *Msg) Record(url string) *Msg {
 func (msg *Msg) LightApp(content string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "light_app",
-		Data: map[string]string{
+		Data: map[string]any{
 			"content": content,
 		},
 	})
@@ -90,7 +90,7 @@ func (msg *Msg) LightApp(content string) *Msg {
 func (msg *Msg) TTS(text string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "tts",
-		Data: map[string]string{
+		Data: map[string]any{
 			"text": text,
 		},
 	})
@@ -100,7 +100,7 @@ func (msg *Msg) TTS(text string) *Msg {
 func (msg *Msg) Poke(qq int64) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "poke",
-		Data: map[string]string{
+		Data: map[string]any{
 			"qq": strconv.FormatInt(qq, 10),
 		},
 	})
@@ -108,11 +108,11 @@ func (msg *Msg) Poke(qq int64) *Msg {
 }
 
 // GMC专用
-func (msg *Msg) Reply(IMessageId int32) *Msg {
+func (msg *Msg) Reply(msgId int32) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "reply",
-		Data: map[string]string{
-			"IMessage_id": strconv.Itoa(int(IMessageId)),
+		Data: map[string]any{
+			"id": strconv.Itoa(int(msgId)),
 		},
 	})
 	return msg
@@ -121,9 +121,7 @@ func (msg *Msg) Reply(IMessageId int32) *Msg {
 func (msg *Msg) Dice(value int64) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "dice",
-		Data: map[string]string{
-			"value": strconv.FormatInt(value, 10),
-		},
+		Data: map[string]any{},
 	})
 	return msg
 }
@@ -131,7 +129,7 @@ func (msg *Msg) Dice(value int64) *Msg {
 func (msg *Msg) SignIn() *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "sign_in",
-		Data: map[string]string{},
+		Data: map[string]any{},
 	})
 	return msg
 }
@@ -139,7 +137,7 @@ func (msg *Msg) SignIn() *Msg {
 func (msg *Msg) Flash(url string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "image",
-		Data: map[string]string{
+		Data: map[string]any{
 			"url":  url,
 			"type": "flash",
 		},
@@ -150,7 +148,7 @@ func (msg *Msg) Flash(url string) *Msg {
 func (msg *Msg) Share(url string, title string, content string, image string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "share",
-		Data: map[string]string{
+		Data: map[string]any{
 			"url":     url,
 			"title":   title,
 			"content": content,
@@ -160,25 +158,21 @@ func (msg *Msg) Share(url string, title string, content string, image string) *M
 	return msg
 }
 
-func (msg *Msg) Json(id int, content string) *Msg {
+func (msg *Msg) Json(content string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
-		Type: "service",
-		Data: map[string]string{
-			"sub_type": "json",
-			"id":       strconv.Itoa(id),
-			"content":  content,
+		Type: "json",
+		Data: map[string]any{
+			"data": content,
 		},
 	})
 	return msg
 }
 
-func (msg *Msg) Xml(id int, content string) *Msg {
+func (msg *Msg) Xml(content string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
-		Type: "service",
-		Data: map[string]string{
-			"sub_type": "xml",
-			"id":       strconv.Itoa(id),
-			"content":  content,
+		Type: "xml",
+		Data: map[string]any{
+			"data": content,
 		},
 	})
 	return msg
@@ -187,8 +181,8 @@ func (msg *Msg) Xml(id int, content string) *Msg {
 func (msg *Msg) Video(url string, cover string, cache bool) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "video",
-		Data: map[string]string{
-			"url":   url,
+		Data: map[string]any{
+			"file":  url,
 			"cover": cover,
 			"cache": strconv.FormatBool(cache),
 		},
@@ -199,8 +193,28 @@ func (msg *Msg) Video(url string, cover string, cache bool) *Msg {
 func (msg *Msg) Sleep(time int64) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "sleep",
-		Data: map[string]string{
+		Data: map[string]any{
 			"time": strconv.FormatInt(time, 10),
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Forward(id string) *Msg {
+	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
+		Type: "forward",
+		Data: map[string]any{
+			"id": id,
+		},
+	})
+	return msg
+}
+
+func (msg *Msg) Node(id string) *Msg {
+	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
+		Type: "node",
+		Data: map[string]any{
+			"id": id,
 		},
 	})
 	return msg

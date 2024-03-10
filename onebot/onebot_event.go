@@ -141,8 +141,8 @@ type File struct {
 }
 
 type IMessage struct {
-	Type string            `json:"type,omitempty"`
-	Data map[string]string `json:"data,omitempty"`
+	Type string         `json:"type,omitempty"`
+	Data map[string]any `json:"data,omitempty"`
 }
 
 type LifeTime struct {
