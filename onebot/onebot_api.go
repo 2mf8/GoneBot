@@ -54,6 +54,7 @@ type Params struct {
 	UserId           int64       `json:"user_id,omitempty"`
 	GroupId          int64       `json:"group_id,omitempty"`
 	Message          []*IMessage `json:"message,omitempty"`
+	Messages         []*IMessage `json:"messages,omitempty"`
 	MessageType      string      `json:"message_type,omitempty"`
 	AutoEscape       bool        `json:"auto_escape,omitempty"`
 	MessageId        int64       `json:"message_id,omitempty"`

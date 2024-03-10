@@ -328,40 +328,30 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}); err != nil {
 		return nil, err
 	} else {
-		i, err := anyUtil.AnyToInt64(resp.Data["message_id"])
+		sr := &onebot.SendMsgResponse{}
+		_rb, err := json.Marshal(resp)
 		if err != nil {
 			return nil, err
 		}
-		sr := &onebot.SendMsgResponse{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.SendMsgResponseData{
-				MessageId: i,
-			},
-			Echo: resp.Echo,
-		}
+		json.Unmarshal(_rb, &sr)
 		return sr, nil
 	}
 }
 
-func (bot *Bot) SendForwardMsg(msg *Msg) (*onebot.SendForwardMsgResp, error) {
+func (bot *Bot) SendForwardMsg(api *onebot.API) (*onebot.SendForwardMsgResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
-		API: &onebot.API{
-			Action: string(onebot.SendForwardMsg),
-			Params: &onebot.Params{
-				Message: msg.IMessageList,
-			},
-			Echo: echo,
-		},
+		API: api,
 	}); err != nil {
+		ai, _ := json.Marshal(api)
+		fmt.Println(string(ai))
 		return nil, err
 	} else {
-		sfm := &onebot.SendForwardMsgResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data:    anyUtil.AnyToStr(resp.Data),
-			Echo:    resp.Echo,
+		sfm := &onebot.SendForwardMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &sfm)
 		return sfm, nil
 	}
 }
@@ -496,35 +486,12 @@ func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot
 	}); err != nil {
 		return nil, err
 	} else {
-		rc, _ := anyUtil.AnyToInt32(resp.Code)
-		gi, _ := anyUtil.AnyToInt64(resp.Data["group_id"])
-		ui, _ := anyUtil.AnyToInt64(resp.Data["user_id"])
-		ag, _ := anyUtil.AnyToInt32(resp.Data["age"])
-		jt, _ := anyUtil.AnyToInt64(resp.Data["join_time"])
-		lst, _ := anyUtil.AnyToInt64(resp.Data["last_sent_time"])
-		tet, _ := anyUtil.AnyToInt64(resp.Data["title_expire_time"])
-		ggmi := &onebot.GetGroupMemberInfoResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: rc,
-			Data: &onebot.GroupMemberInfo{
-				GroupId:         gi,
-				UserId:          ui,
-				Nickname:        anyUtil.AnyToStr(resp.Data["nickname"]),
-				Card:            anyUtil.AnyToStr(resp.Data["card"]),
-				Sex:             onebot.SexType(anyUtil.AnyToStr(resp.Data["sex"])),
-				Age:             ag,
-				Area:            anyUtil.AnyToStr(resp.Data["area"]),
-				JoinTime:        jt,
-				LastSentTime:    lst,
-				Level:           anyUtil.AnyToStr(resp.Data["level"]),
-				Role:            anyUtil.AnyToStr(resp.Data["role"]),
-				UnFriendly:      anyUtil.AnyToBool(resp.Data["unfriendly"]),
-				Title:           anyUtil.AnyToStr(resp.Data["title"]),
-				TitleExpireTime: tet,
-				CardChangeable:  anyUtil.AnyToBool(resp.Data["card_changeable"]),
-			},
-			Echo: anyUtil.AnyToStr(resp.Data["echo"]),
+		ggmi := &onebot.GetGroupMemberInfoResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &ggmi)
 		return ggmi, nil
 	}
 }
@@ -542,21 +509,12 @@ func (bot *Bot) GetGroupInfo(groupId int64, noCache bool) (*onebot.GetGroupInfoR
 	}); err != nil {
 		return nil, err
 	} else {
-		rc, _ := anyUtil.AnyToInt32(resp.Code)
-		gi, _ := anyUtil.AnyToInt64(resp.Data["group_id"])
-		mc, _ := anyUtil.AnyToInt32(resp.Data["member_count"])
-		mmc, _ := anyUtil.AnyToInt32(resp.Data["max_member_count"])
-		ggi := &onebot.GetGroupInfoResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: rc,
-			Data: &onebot.GroupInfo{
-				GroupId:        gi,
-				GroupName:      anyUtil.AnyToStr(resp.Data["group_name"]),
-				MemberCount:    mc,
-				MaxMemberCount: mmc,
-			},
-			Echo: anyUtil.AnyToStr(resp.Data["echo"]),
+		ggi := &onebot.GetGroupInfoResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &ggi)
 		return ggi, nil
 	}
 }
@@ -575,18 +533,12 @@ func (bot *Bot) SendPrivateMsg(userId int64, msg *Msg, autoEscape bool) (*onebot
 	}); err != nil {
 		return nil, err
 	} else {
-		i, err := anyUtil.AnyToInt64(resp.Data["message_id"])
+		spm := &onebot.SendMsgResponse{}
+		_rb, err := json.Marshal(resp)
 		if err != nil {
 			return nil, err
 		}
-		spm := &onebot.SendMsgResponse{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.SendMsgResponseData{
-				MessageId: i,
-			},
-			Echo: resp.Echo,
-		}
+		json.Unmarshal(_rb, &spm)
 		return spm, nil
 	}
 }
@@ -607,18 +559,12 @@ func (bot *Bot) SendMsg(msgType string, userId, groupId int64, msg *Msg, autoEsc
 	}); err != nil {
 		return nil, err
 	} else {
-		i, err := anyUtil.AnyToInt64(resp.Data["message_id"])
+		sm := &onebot.SendMsgResponse{}
+		_rb, err := json.Marshal(resp)
 		if err != nil {
 			return nil, err
 		}
-		sm := &onebot.SendMsgResponse{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.SendMsgResponseData{
-				MessageId: i,
-			},
-			Echo: resp.Echo,
-		}
+		json.Unmarshal(_rb, &sm)
 		return sm, nil
 	}
 }
@@ -635,28 +581,12 @@ func (bot *Bot) GetMsg(msgId int64) (*onebot.GetMsgResp, error) {
 	}); err != nil {
 		return nil, err
 	} else {
-		gs := &onebot.GroupSender{}
-		im := []*onebot.IMessage{}
-		ti, _ := anyUtil.AnyToInt64(resp.Data["time"])
-		mi, _ := anyUtil.AnyToInt64(resp.Data["message_id"])
-		ri, _ := anyUtil.AnyToInt64(resp.Data["real_id"])
-		rds, _ := json.Marshal(resp.Data["sender"])
-		json.Unmarshal(rds, gs)
-		mds, _ := json.Marshal(resp.Data["message"])
-		json.Unmarshal(mds, &im)
-		gm := &onebot.GetMsgResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.IGetMsg{
-				Time:        ti,
-				MessageType: anyUtil.AnyToStr(resp.Data["message_type"]),
-				MessageId:   mi,
-				RealId:      ri,
-				Sender:      gs,
-				Message:     im,
-			},
-			Echo: resp.Echo,
+		gm := &onebot.GetMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &gm)
 		return gm, nil
 	}
 }
@@ -673,15 +603,12 @@ func (bot *Bot) GetForwardMsg(id string) (*onebot.GetForwardMsgResp, error) {
 	}); err != nil {
 		return nil, err
 	} else {
-		im := []*onebot.IMessage{}
-		mds, _ := json.Marshal(resp.Data["message"])
-		json.Unmarshal(mds, &im)
-		gfm := &onebot.GetForwardMsgResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data:    im,
-			Echo:    resp.Echo,
+		gfm := &onebot.GetForwardMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &gfm)
 		return gfm, nil
 	}
 }
@@ -913,16 +840,12 @@ func (bot *Bot) GetLoginInfo() (*onebot.GetLoginInfoResp, error) {
 	}); err != nil {
 		return nil, err
 	} else {
-		ui, _ := anyUtil.AnyToInt64(resp.Data["user_id"])
-		gli := &onebot.GetLoginInfoResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.IGetLoginInfo{
-				UserId:   ui,
-				Nickname: anyUtil.AnyToStr(resp.Data["nickname"]),
-			},
-			Echo: resp.Echo,
+		gli := &onebot.GetLoginInfoResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &gli)
 		return gli, nil
 	}
 }
@@ -937,14 +860,12 @@ func (bot *Bot) CanSendImage() (*onebot.CanSendImageResp, error) {
 	}); err != nil {
 		return nil, err
 	} else {
-		csi := &onebot.CanSendImageResp{
-			Status:  anyUtil.AnyToStr(resp.Status),
-			RetCode: resp.Code,
-			Data: &onebot.ICanSendImageOrRecord{
-				Yes: anyUtil.AnyToBool(resp.Data["yes"]),
-			},
-			Echo: resp.Echo,
+		csi := &onebot.CanSendImageResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
 		}
+		json.Unmarshal(_rb, &csi)
 		return csi, nil
 	}
 }
