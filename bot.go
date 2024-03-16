@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/2mf8/GoneBot/keyboard"
 	"github.com/2mf8/GoneBot/onebot"
 	"github.com/2mf8/GoneBot/util"
 	"github.com/fanliao/go-promise"
@@ -338,21 +339,59 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) SendForwardMsg(api *onebot.API) (*onebot.SendForwardMsgResp, error) {
-	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
-		API: api,
-	}); err != nil {
-		ai, _ := json.Marshal(api)
-		fmt.Println(string(ai))
-		return nil, err
-	} else {
-		sfm := &onebot.SendForwardMsgResp{}
-		_rb, err := json.Marshal(resp)
-		if err != nil {
+func (bot *Bot) SendForwardMsg(nickName string, content string, kc []*keyboard.Row) (*onebot.SendForwardMsgResp, error) {
+	if nickName == "" {
+		nickName = "爱魔方吧"
+	}
+	if content == "" {
+		content = "# 标题 "
+	}
+	if len(kc) > 0 {
+		if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+			API: &onebot.API{
+				Action: string(onebot.SendForwardMsg),
+				Params: &onebot.Params{
+					Messages: []*onebot.IMessage{
+						{
+							Type: "node",
+							Data: map[string]any{
+								"name": nickName,
+								"uin":  anyUtil.AnyToStr(bot.BotId),
+								"content": []map[string]any{
+									{
+										"type": "markdown",
+										"data": map[string]any{
+											"content": fmt.Sprintf("{\"content\":\"%s\n \"}", content),
+										},
+									},
+									{
+										"type": "keyboard",
+										"data": map[string]any{
+											"content": map[string]any{
+												"rows": kc,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
+			},
+		}); err != nil {
 			return nil, err
+		} else {
+			sfm := &onebot.SendForwardMsgResp{}
+			_rb, err := json.Marshal(resp)
+			if err != nil {
+				return nil, err
+			}
+			json.Unmarshal(_rb, &sfm)
+			return sfm, nil
 		}
-		json.Unmarshal(_rb, &sfm)
-		return sfm, nil
+	} else {
+		return nil, nil
 	}
 }
 

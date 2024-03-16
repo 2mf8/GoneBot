@@ -42,6 +42,8 @@ const (
 	GetVersioInfo        ActionType = "get_version_info"
 	SetRestart           ActionType = "set_restart"
 	CleanCache           ActionType = "clean_cache"
+	GroupPoke            ActionType = "group_poke"
+	FriendPoke           ActionType = "friend_poke"
 )
 
 type API struct {
