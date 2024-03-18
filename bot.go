@@ -347,6 +347,8 @@ func (bot *Bot) SendForwardMsg(nickName string, content string, kc []*keyboard.R
 		content = "# 标题 "
 	}
 	if len(kc) > 0 {
+		md := fmt.Sprintf("{\"content\":\"%s\"}", content)
+		fmt.Println(md)
 		if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 			API: &onebot.API{
 				Action: string(onebot.SendForwardMsg),
@@ -361,7 +363,7 @@ func (bot *Bot) SendForwardMsg(nickName string, content string, kc []*keyboard.R
 									{
 										"type": "markdown",
 										"data": map[string]any{
-											"content": fmt.Sprintf("{\"content\":\"%s\n \"}", content),
+											"content": md,
 										},
 									},
 									{
