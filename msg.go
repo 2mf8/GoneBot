@@ -10,6 +10,10 @@ type Msg struct {
 	IMessageList []*onebot.IMessage
 }
 
+type MutiMsg struct {
+	IMutiMsgList []*onebot.ForwardMsg
+}
+
 func NewMsg() *Msg {
 	return &Msg{
 		IMessageList: make([]*onebot.IMessage, 0),
@@ -233,4 +237,15 @@ func (msg *Msg) Node(id string) *Msg {
 		},
 	})
 	return msg
+}
+
+func NewForwardMsg() *MutiMsg {
+	return &MutiMsg{
+		IMutiMsgList: make([]*onebot.ForwardMsg, 0),
+	}
+}
+
+func (mutiMsg *MutiMsg) Add(fMsg *onebot.ForwardMsg) *MutiMsg {
+	mutiMsg.IMutiMsgList = append(mutiMsg.IMutiMsgList, fMsg)
+	return mutiMsg
 }

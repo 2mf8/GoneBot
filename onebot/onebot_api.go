@@ -56,7 +56,7 @@ type Params struct {
 	UserId           int64       `json:"user_id,omitempty"`
 	GroupId          int64       `json:"group_id,omitempty"`
 	Message          []*IMessage `json:"message,omitempty"`
-	Messages         []*IMessage `json:"messages,omitempty"`
+	Messages         any         `json:"messages,omitempty"`
 	MessageType      string      `json:"message_type,omitempty"`
 	AutoEscape       bool        `json:"auto_escape,omitempty"`
 	MessageId        int64       `json:"message_id,omitempty"`
@@ -86,6 +86,10 @@ type Params struct {
 	Name             string      `json:"name,omitempty"`
 	Uin              string      `json:"uin,omitempty"`
 	Content          string      `json:"content,omitempty"`
+}
+
+type ForwardParams struct {
+	Messages []*ForwardMsg `json:"messages,omitempty"`
 }
 
 type SendMsgResponse struct {
@@ -448,6 +452,13 @@ type CleanCacheResp struct {
 	Status  string `json:"status,omitempty"`
 	RetCode int32  `json:"retcode,omitempty"`
 	Data    any    `json:"data,omitempty"`
+	Echo    string `json:"echo,omitempty"`
+}
+
+type SendMarkdownMsgResp struct {
+	Status  string `json:"status,omitempty"`
+	RetCode int32  `json:"retcode,omitempty"`
+	Data    string `json:"data,omitempty"`
 	Echo    string `json:"echo,omitempty"`
 }
 

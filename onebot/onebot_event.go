@@ -145,6 +145,12 @@ type IMessage struct {
 	Data map[string]any `json:"data,omitempty"`
 }
 
+type ForwardMsg struct {
+	Name    string `json:"name,omitempty"`
+	Uin     string `json:"uin,omitempty"`
+	Content *IMessage   `json:"content,omitempty"`
+}
+
 type LifeTime struct {
 	Event
 	MetaEventType string `json:"meta_event_type"`
