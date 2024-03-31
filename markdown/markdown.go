@@ -3,6 +3,7 @@ package markdown
 import (
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 type MarkDown struct {
@@ -52,31 +53,61 @@ func (r *MarkDown) H3(content string) *MarkDown {
 }
 
 func (r *MarkDown) DeleteLine(content string) *MarkDown {
-	str := fmt.Sprintf("\\n~~%s~~", content)
+	str := fmt.Sprintf("~~%s~~", content)
 	r.Str += str
 	return r
 }
 
 func (r *MarkDown) Bold(content string) *MarkDown {
-	str := fmt.Sprintf("\\n**%s**", content)
+	str := fmt.Sprintf("**%s** ", content)
 	r.Str += str
 	return r
 }
 
 func (r *MarkDown) Italic(content string) *MarkDown {
-	str := fmt.Sprintf("\\n*%s*", content)
+	str := fmt.Sprintf("*%s* ", content)
 	r.Str += str
 	return r
 }
 
 func (r *MarkDown) ItalicBold(content string) *MarkDown {
-	str := fmt.Sprintf("\\n***%s***", content)
+	str := fmt.Sprintf("***%s*** ", content)
 	r.Str += str
 	return r
 }
 
 func (r *MarkDown) BlockReference(content string) *MarkDown {
-	str := fmt.Sprintf("\\n\\n> %s\\n", content)
+	str := fmt.Sprintf("\\n> %s\\n", content)
+	r.Str += str
+	return r
+}
+
+func (r *MarkDown) Image(text, url string, width, height int) *MarkDown {
+	str := fmt.Sprintf("\\n![%s #%vpx #%vpx](%s)", text, width, height, url)
+	r.Str += str
+	return r
+}
+
+func (r *MarkDown) DividerLine() *MarkDown {
+	str := fmt.Sprintln("\\n ---\\n")
+	r.Str += str
+	r.Str = strings.TrimSpace(r.Str)
+	return r
+}
+
+func (r *MarkDown) Text(content string) *MarkDown {
+	r.Str += content
+	return r
+}
+
+func (r *MarkDown) NewLine() *MarkDown {
+	r.Str += "\\n"
+	return r
+}
+
+func (r *MarkDown) Json(content string) *MarkDown {
+	c := strings.ReplaceAll(strings.ReplaceAll(content, "\t", "\\t"), "\n", "\\n")
+	str := fmt.Sprintf("\\n```json\\n%s\\n```\\n", c)
 	r.Str += str
 	return r
 }
