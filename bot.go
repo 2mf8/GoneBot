@@ -340,7 +340,7 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) SendMarkdownMsg(groupId int64, nickName string, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendMarkdownMsg(groupId, userId int64, nickName string, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
 	if nickName == "" {
 		nickName = "爱魔方吧"
@@ -381,13 +381,19 @@ func (bot *Bot) SendMarkdownMsg(groupId int64, nickName string, markdown *markdo
 		}
 		json.Unmarshal(_rb, &sfm)
 		lm := NewMsg().LongMsg(sfm.Data)
-		sr, err := bot.SendGroupMessage(groupId, lm, false)
-		return sr, err
+		if groupId > 0 {
+			sr, err := bot.SendGroupMessage(groupId, lm, false)
+			return sr, err
+		}
+		if userId > 0 {
+			sr, err := bot.SendPrivateMsg(userId, lm, false)
+			return sr, err
+		}
 	}
 	return sr, fmt.Errorf("发送失败")
 }
 
-func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId int64, nickName string, markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId, userId int64, nickName string, markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
 	if nickName == "" {
 		nickName = "爱魔方吧"
@@ -437,8 +443,14 @@ func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId int64, nickName string, markd
 		}
 		json.Unmarshal(_rb, &sfm)
 		lm := NewMsg().LongMsg(sfm.Data)
-		sr, err := bot.SendGroupMessage(groupId, lm, false)
-		return sr, err
+		if groupId > 0 {
+			sr, err := bot.SendGroupMessage(groupId, lm, false)
+			return sr, err
+		}
+		if userId > 0 {
+			sr, err := bot.SendPrivateMsg(userId, lm, false)
+			return sr, err
+		}
 	}
 	return sr, fmt.Errorf("发送失败")
 }
@@ -635,7 +647,7 @@ func (bot *Bot) SendPrivateMsg(userId int64, msg *Msg, autoEscape bool) (*onebot
 		API: &onebot.API{
 			Action: string(onebot.SendPrivateMsg),
 			Params: &onebot.Params{
-				GroupId:    userId,
+				UserId:     userId,
 				Message:    msg.IMessageList,
 				AutoEscape: autoEscape,
 			},
