@@ -35,7 +35,8 @@ func (r *MarkDown) MqqApiAt(nickname string, tinyId uint64) *MarkDown {
 	return r
 }
 
-func (r *MarkDown) MqqApiAtToUserInfo(nickname string, tinyId uint64) *MarkDown {
+// 需配合 SendMarkdownAtMsg 和 SendMarkdownAndKeyboardAtMsg 使用，否则没有效果
+func (r *MarkDown) MqqApiAtToProfile(nickname string, tinyId uint64) *MarkDown {
 	str := fmt.Sprintf("\\n[@%s](mqqapi://card/show_pslcard?src_type=internal&version=1&uin=%v&crad_type=friend&source=qrcode)", nickname, tinyId)
 	r.Str = str
 	return r
