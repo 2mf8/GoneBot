@@ -400,6 +400,7 @@ func (bot *Bot) SendMarkdownMsg(groupId, userId int64, markdown *markdown.MarkDo
 	return sr, fmt.Errorf("发送失败")
 }
 
+// 带 @效果
 func (bot *Bot) SendMarkdownAtMsg(groupId, userId int64, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
 	nickName := ""
@@ -533,6 +534,7 @@ func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId, userId int64,  markdown *mar
 	return sr, fmt.Errorf("发送失败")
 }
 
+// 带 @效果
 func (bot *Bot) SendMarkdownAndKeyboardAtMsg(groupId, userId int64,  markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
 	nickName := ""
