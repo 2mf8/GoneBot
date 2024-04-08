@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -340,8 +341,14 @@ func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*one
 	}
 }
 
-func (bot *Bot) SendMarkdownMsg(groupId, userId int64, nickName string, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendMarkdownMsg(groupId, userId int64, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
+	nickName := ""
+	gi, err := bot.GetGroupMemberInfo(groupId, bot.BotId, true)
+	if err != nil {
+		return sr, err
+	}
+	nickName = gi.Data.Nickname
 	if nickName == "" {
 		nickName = "爱魔方吧"
 	}
@@ -385,7 +392,7 @@ func (bot *Bot) SendMarkdownMsg(groupId, userId int64, nickName string, markdown
 			sr, err := bot.SendGroupMessage(groupId, lm, false)
 			return sr, err
 		}
-		if userId > 0 {
+		if userId > 0 && groupId == 0 {
 			sr, err := bot.SendPrivateMsg(userId, lm, false)
 			return sr, err
 		}
@@ -393,8 +400,79 @@ func (bot *Bot) SendMarkdownMsg(groupId, userId int64, nickName string, markdown
 	return sr, fmt.Errorf("发送失败")
 }
 
-func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId, userId int64, nickName string, markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendMarkdownAtMsg(groupId, userId int64, markdown *markdown.MarkDown) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
+	nickName := ""
+	gi, err := bot.GetGroupMemberInfo(groupId, bot.BotId, true)
+	if err != nil {
+		return sr, err
+	}
+	nickName = gi.Data.Nickname
+	if nickName == "" {
+		nickName = "爱魔方吧"
+	}
+	if markdown.Str == "" {
+		markdown.Str = "# 标题 "
+	}
+	md := fmt.Sprintf("{\"content\":\"%s\"}", markdown.Str)
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.SendForwardMsg),
+			Params: &onebot.Params{
+				Messages: []*onebot.IMessage{
+					{
+						Type: "node",
+						Data: map[string]any{
+							"name": nickName,
+							"uin":  anyUtil.AnyToStr(bot.BotId),
+							"content": []map[string]any{
+								{
+									"type": "at",
+									"data": map[string]string{
+										"qq": strconv.Itoa(int(userId)),
+									},
+								},
+								{
+									"type": "markdown",
+									"data": map[string]any{
+										"content": md,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
+		},
+	}); err == nil {
+		sfm := &onebot.SendMarkdownMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return sr, err
+		}
+		json.Unmarshal(_rb, &sfm)
+		lm := NewMsg().LongMsg(sfm.Data)
+		if groupId > 0 {
+			sr, err := bot.SendGroupMessage(groupId, lm, false)
+			return sr, err
+		}
+		if userId > 0 && groupId == 0 {
+			sr, err := bot.SendPrivateMsg(userId, lm, false)
+			return sr, err
+		}
+	}
+	return sr, fmt.Errorf("发送失败")
+}
+
+func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId, userId int64,  markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
+	sr := &onebot.SendMsgResponse{}
+	nickName := ""
+	gi, err := bot.GetGroupMemberInfo(groupId, bot.BotId, true)
+	if err != nil {
+		return sr, err
+	}
+	nickName = gi.Data.Nickname
 	if nickName == "" {
 		nickName = "爱魔方吧"
 	}
@@ -447,7 +525,81 @@ func (bot *Bot) SendMarkdownAndKeyboardMsg(groupId, userId int64, nickName strin
 			sr, err := bot.SendGroupMessage(groupId, lm, false)
 			return sr, err
 		}
-		if userId > 0 {
+		if userId > 0 && groupId == 0 {
+			sr, err := bot.SendPrivateMsg(userId, lm, false)
+			return sr, err
+		}
+	}
+	return sr, fmt.Errorf("发送失败")
+}
+
+func (bot *Bot) SendMarkdownAndKeyboardAtMsg(groupId, userId int64,  markdown *markdown.MarkDown, keyboard *keyboard.CustomKeyboard) (*onebot.SendMsgResponse, error) {
+	sr := &onebot.SendMsgResponse{}
+	nickName := ""
+	gi, err := bot.GetGroupMemberInfo(groupId, bot.BotId, true)
+	if err != nil {
+		return sr, err
+	}
+	nickName = gi.Data.Nickname
+	if nickName == "" {
+		nickName = "爱魔方吧"
+	}
+	if markdown.Str == "" {
+		markdown.Str = "# 标题 "
+	}
+	md := fmt.Sprintf("{\"content\":\"%s\"}", markdown.Str)
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.SendForwardMsg),
+			Params: &onebot.Params{
+				Messages: []*onebot.IMessage{
+					{
+						Type: "node",
+						Data: map[string]any{
+							"name": nickName,
+							"uin":  anyUtil.AnyToStr(bot.BotId),
+							"content": []map[string]any{
+								{
+									"type": "at",
+									"data": map[string]string{
+										"qq": strconv.Itoa(int(userId)),
+									},
+								},
+								{
+									"type": "markdown",
+									"data": map[string]any{
+										"content": md,
+									},
+								},
+								{
+									"type": "keyboard",
+									"data": map[string]any{
+										"content": map[string]any{
+											"rows": keyboard.Rows,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
+		},
+	}); err == nil {
+		keyboard.ResetAutoId()
+		sfm := &onebot.SendMarkdownMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return sr, err
+		}
+		json.Unmarshal(_rb, &sfm)
+		lm := NewMsg().LongMsg(sfm.Data)
+		if groupId > 0 {
+			sr, err := bot.SendGroupMessage(groupId, lm, false)
+			return sr, err
+		}
+		if userId > 0 && groupId == 0 {
 			sr, err := bot.SendPrivateMsg(userId, lm, false)
 			return sr, err
 		}

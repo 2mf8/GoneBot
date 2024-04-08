@@ -28,6 +28,19 @@ func (r *MarkDown) MqqApiAuto(content string) *MarkDown {
 	return r
 }
 
+// 需配合 SendMarkdownAtMsg 和 SendMarkdownAndKeyboardAtMsg 使用，否则没有效果
+func (r *MarkDown) MqqApiAt(nickname string, tinyId uint64) *MarkDown {
+	str := fmt.Sprintf("\\n[@%s](mqqapi://markdown/mention?at_type=1&at_tinyid=%v)", nickname, tinyId)
+	r.Str += str
+	return r
+}
+
+func (r *MarkDown) MqqApiAtToUserInfo(nickname string, tinyId uint64) *MarkDown {
+	str := fmt.Sprintf("\\n[@%s](mqqapi://card/show_pslcard?src_type=internal&version=1&uin=%v&crad_type=friend&source=qrcode)", nickname, tinyId)
+	r.Str = str
+	return r
+}
+
 func (r *MarkDown) Url(name, webUrl string) *MarkDown {
 	str := fmt.Sprintf("\\n[🔗%s](%s)", name, webUrl)
 	r.Str += str
@@ -105,9 +118,9 @@ func (r *MarkDown) NewLine() *MarkDown {
 	return r
 }
 
-func (r *MarkDown) Json(content string) *MarkDown {
+func (r *MarkDown) Code(content string) *MarkDown {
 	c := strings.ReplaceAll(strings.ReplaceAll(content, "\t", "\\t"), "\n", "\\n")
-	str := fmt.Sprintf("\\n```json\\n%s\\n```\\n", c)
+	str := fmt.Sprintf("\\n```\\n%s\\n```\\n", c)
 	r.Str += str
 	return r
 }
