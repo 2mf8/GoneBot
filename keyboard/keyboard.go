@@ -4,6 +4,8 @@ import "fmt"
 
 var AutoId int = 0
 
+var Buttons =  make([]*Button, 0)
+
 // ActionType 按钮操作类型
 type ActionType uint32
 
@@ -78,23 +80,17 @@ type Permission struct {
 	SpecifyUserIDs []string `json:"specify_user_ids,omitempty"`
 }
 
-func NewRow() *Row {
-	return &Row{
-		Buttons: make([]*Button, 0),
-	}
-}
-
-func NewKeyBoard() *CustomKeyboard {
+func Builder() *CustomKeyboard {
 	return &CustomKeyboard{
 		Rows: make([]*Row, 0),
 	}
 }
 
 // 通用按钮，自由度最高
-func (r *Row) Button(label, visitedLabel, data string, style, actionType, permissionType int, reply, enter, atBotShowChannelList bool) *Row {
+func (c *CustomKeyboard) Button(label, visitedLabel, data string, style, actionType, permissionType int, reply, enter, atBotShowChannelList bool) *CustomKeyboard {
 	AutoId++
 	id := fmt.Sprintf("%v", AutoId)
-	r.Buttons = append(r.Buttons, &Button{
+	button := &Button{
 		ID: id,
 		RenderData: &RenderData{
 			Label:        label,
@@ -111,15 +107,16 @@ func (r *Row) Button(label, visitedLabel, data string, style, actionType, permis
 			Enter:                enter,
 			AtBotShowChannelList: atBotShowChannelList,
 		},
-	})
-	return r
+	}
+	Buttons = append(Buttons, button)
+	return c
 }
 
 // 文本按钮，所有人可用
-func (r *Row) TextButton(label, visitedLabel, data string, reply, enter bool) *Row {
+func (c *CustomKeyboard) TextButton(label, visitedLabel, data string, reply, enter bool) *CustomKeyboard {
 	AutoId++
 	id := fmt.Sprintf("%v", AutoId)
-	r.Buttons = append(r.Buttons, &Button{
+	button := &Button{
 		ID: id,
 		RenderData: &RenderData{
 			Label:        label,
@@ -136,15 +133,16 @@ func (r *Row) TextButton(label, visitedLabel, data string, reply, enter bool) *R
 			Enter:                enter,
 			AtBotShowChannelList: false,
 		},
-	})
-	return r
+	}
+	Buttons = append(Buttons, button)
+	return c
 }
 
 // 文本按钮，管理可用
-func (r *Row) TextButtonAdmin(label, visitedLabel, data string, reply, enter bool) *Row {
+func (c *CustomKeyboard) TextButtonAdmin(label, visitedLabel, data string, reply, enter bool) *CustomKeyboard {
 	AutoId++
 	id := fmt.Sprintf("%v", AutoId)
-	r.Buttons = append(r.Buttons, &Button{
+	button := &Button{
 		ID: id,
 		RenderData: &RenderData{
 			Label:        label,
@@ -161,15 +159,16 @@ func (r *Row) TextButtonAdmin(label, visitedLabel, data string, reply, enter boo
 			Enter:                enter,
 			AtBotShowChannelList: false,
 		},
-	})
-	return r
+	}
+	Buttons = append(Buttons, button)
+	return c
 }
 
 // 链接按钮，所有人可用
-func (r *Row) UrlButton(label, visitedLabel, url string, reply, enter bool) *Row {
+func (c *CustomKeyboard) UrlButton(label, visitedLabel, url string, reply, enter bool) *CustomKeyboard {
 	AutoId++
 	id := fmt.Sprintf("%v", AutoId)
-	r.Buttons = append(r.Buttons, &Button{
+	button := &Button{
 		ID: id,
 		RenderData: &RenderData{
 			Label:        label,
@@ -186,15 +185,16 @@ func (r *Row) UrlButton(label, visitedLabel, url string, reply, enter bool) *Row
 			Enter:                enter,
 			AtBotShowChannelList: false,
 		},
-	})
-	return r
+	}
+	Buttons = append(Buttons, button)
+	return c
 }
 
 // 链接按钮，管理可用
-func (r *Row) UrlButtonAdmin(label, visitedLabel, url string, reply, enter bool) *Row {
+func (c *CustomKeyboard) UrlButtonAdmin(label, visitedLabel, url string, reply, enter bool) *CustomKeyboard {
 	AutoId++
 	id := fmt.Sprintf("%v", AutoId)
-	r.Buttons = append(r.Buttons, &Button{
+	button := &Button{
 		ID: id,
 		RenderData: &RenderData{
 			Label:        label,
@@ -211,15 +211,20 @@ func (r *Row) UrlButtonAdmin(label, visitedLabel, url string, reply, enter bool)
 			Enter:                enter,
 			AtBotShowChannelList: false,
 		},
-	})
-	return r
+	}
+	Buttons = append(Buttons, button)
+	return c
 }
 
-func (k *CustomKeyboard) Row(r *Row) *CustomKeyboard {
-	k.Rows = append(k.Rows, r)
-	return k
+func (c *CustomKeyboard) SetRow() *CustomKeyboard {
+	row := &Row{
+		Buttons: Buttons,
+	}
+	c.Rows = append(c.Rows, row)
+	Buttons = []*Button{}
+	return c
 }
 
-func (k *CustomKeyboard) ResetAutoId() {
+func (c *CustomKeyboard) ResetAutoId() {
 	AutoId = 0
 }

@@ -70,7 +70,6 @@ func (msg *Msg) At(qq int64, display string) *Msg {
 		Type: "at",
 		Data: map[string]any{
 			"qq":      strconv.FormatInt(qq, 10),
-			"display": display,
 		},
 	})
 	return msg

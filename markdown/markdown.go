@@ -10,7 +10,7 @@ type MarkDown struct {
 	Str string
 }
 
-func NewMarkDown() *MarkDown {
+func Builder() *MarkDown {
 	return &MarkDown{
 		Str: "",
 	}
