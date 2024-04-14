@@ -296,7 +296,7 @@ func (bot *Bot) handleFrame(frame *onebot.Frame, data []byte) {
 
 func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	frame.BotId = bot.BotId
-	frame.Echo = fmt.Sprintf("%v", time.Now().UnixNano())
+	frame.Echo = util.GenerateIdStr()
 	frame.Ok = true
 	data, err := json.Marshal(frame)
 	if err != nil {
