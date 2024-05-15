@@ -31,12 +31,19 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 	messageHandler := func(messageType int, data []byte) {
 		var frame onebot.Frame
 		if messageType == websocket.TextMessage {
+			fmt.Println(string(data))
 			err := json.Unmarshal(data, &frame)
 			if err != nil {
 				log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
 				return
 			}
-
+		} else if messageType == websocket.BinaryMessage {
+			fmt.Println(string(data))
+			err := json.Unmarshal(data, &frame)
+			if err != nil {
+				log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
+				return
+			}
 		} else {
 			log.Errorf("invalid websocket messageType: %+v", messageType)
 			return
