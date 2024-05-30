@@ -323,7 +323,7 @@ func (bot *Bot) sendFrameAndWait(frame *onebot.Frame) (*onebot.Frame, error) {
 	return respFrame, nil
 }
 
-func (bot *Bot) SendGroupMessage(groupId int64, msg *Msg, autoEscape bool) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendGroupMsg(groupId int64, msg *Msg, autoEscape bool) (*onebot.SendMsgResponse, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.SendGroupMsg),
@@ -440,13 +440,13 @@ func (bot *Bot) SendGroupMarkdownAndKeyboardMsg(groupId int64, markdown *markdow
 	return sr, fmt.Errorf("发送失败")
 }
 
-func (bot *Bot) SendForwardMsg(groupId int64, forwardMsg *onebot.ForwardParams) (*onebot.SendMsgResponse, error) {
+func (bot *Bot) SendGroupForwardMsg(groupId int64, forwardMsg *Msg) (*onebot.SendMsgResponse, error) {
 	sr := &onebot.SendMsgResponse{}
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.SendForwardMsg),
 			Params: &onebot.Params{
-				Messages: forwardMsg.Messages,
+				Messages: forwardMsg.IMessageList,
 			},
 			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
 		},
@@ -458,7 +458,31 @@ func (bot *Bot) SendForwardMsg(groupId int64, forwardMsg *onebot.ForwardParams) 
 		}
 		json.Unmarshal(_rb, &sfm)
 		lm := NewMsg().Forward(sfm.Data)
-		sr, err := bot.SendGroupMessage(groupId, lm, false)
+		sr, err := bot.SendGroupMsg(groupId, lm, false)
+		return sr, err
+	}
+	return sr, fmt.Errorf("发送失败")
+}
+
+func (bot *Bot) SendPrivateForwardMsg(userId int64, forwardMsg *Msg) (*onebot.SendMsgResponse, error) {
+	sr := &onebot.SendMsgResponse{}
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.SendForwardMsg),
+			Params: &onebot.Params{
+				Messages: forwardMsg.IMessageList,
+			},
+			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
+		},
+	}); err == nil {
+		sfm := &onebot.SendForwardMsgResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return sr, err
+		}
+		json.Unmarshal(_rb, &sfm)
+		lm := NewMsg().Forward(sfm.Data)
+		sr, err := bot.SendPrivateMsg(userId, lm, false)
 		return sr, err
 	}
 	return sr, fmt.Errorf("发送失败")

@@ -88,10 +88,6 @@ type Params struct {
 	Content          string      `json:"content,omitempty"`
 }
 
-type ForwardParams struct {
-	Messages []*ForwardMsg `json:"messages,omitempty"`
-}
-
 type SendMsgResponse struct {
 	Status  string               `json:"status,omitempty"`
 	RetCode int32                `json:"retcode,omitempty"`

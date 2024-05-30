@@ -28,7 +28,7 @@ func main() {
 		}
 	}
 
-	gonebot.HandleGroupMessage = func(bot *gonebot.Bot, event *onebot.GroupMessageEvent) {
+	gonebot.HandleGroupMessage = func(bot *gonebot.Bot, event *onebot.GroupMsgEvent) {
 		rawMsg := event.RawMessage
 		groupId := event.GroupId
 		userId := event.UserId

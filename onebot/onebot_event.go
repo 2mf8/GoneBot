@@ -148,7 +148,7 @@ type IMessage struct {
 type ForwardMsg struct {
 	Name    string `json:"name,omitempty"`
 	Uin     string `json:"uin,omitempty"`
-	Content *IMessage   `json:"content,omitempty"`
+	Content []*IMessage   `json:"content,omitempty"`
 }
 
 type LifeTime struct {

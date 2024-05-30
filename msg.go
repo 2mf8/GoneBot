@@ -10,10 +10,6 @@ type Msg struct {
 	IMessageList []*onebot.IMessage
 }
 
-type MutiMsg struct {
-	IMutiMsgList []*onebot.ForwardMsg
-}
-
 func NewMsg() *Msg {
 	return &Msg{
 		IMessageList: make([]*onebot.IMessage, 0),
@@ -69,7 +65,7 @@ func (msg *Msg) At(qq int64, display string) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "at",
 		Data: map[string]any{
-			"qq":      strconv.FormatInt(qq, 10),
+			"qq": strconv.FormatInt(qq, 10),
 		},
 	})
 	return msg
@@ -218,11 +214,13 @@ func (msg *Msg) Sleep(time int64) *Msg {
 	return msg
 }
 
-func (msg *Msg) Forward(id string) *Msg {
+func (msg *Msg) ForwardParam(name, uin string, content *Msg) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
-		Type: "forward",
+		Type: "node",
 		Data: map[string]any{
-			"id": id,
+			"name":    name,
+			"uin":     uin,
+			"content": content.IMessageList,
 		},
 	})
 	return msg
@@ -238,13 +236,12 @@ func (msg *Msg) Node(id string) *Msg {
 	return msg
 }
 
-func NewForwardMsg() *MutiMsg {
-	return &MutiMsg{
-		IMutiMsgList: make([]*onebot.ForwardMsg, 0),
-	}
-}
-
-func (mutiMsg *MutiMsg) Add(fMsg *onebot.ForwardMsg) *MutiMsg {
-	mutiMsg.IMutiMsgList = append(mutiMsg.IMutiMsgList, fMsg)
-	return mutiMsg
+func (msg *Msg) Forward(id string) *Msg {
+	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
+		Type: "forward",
+		Data: map[string]any{
+			"id": id,
+		},
+	})
+	return msg
 }
