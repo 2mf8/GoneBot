@@ -278,15 +278,19 @@ func (bot *Bot) handleFrame(frame *onebot.Frame, data []byte) {
 			}
 			return
 		}
-		if frame.SubType == string(onebot.GroupAddOrInviteRequest) {
+		fmt.Println(frame.SubType,"djksfhjksdf")
+		if frame.RequestType == string(onebot.GroupAddOrInviteRequest) {
 			gaoiq := &onebot.GroupAddOrInviteRequestEvent{}
+			fmt.Println("ceshidjkdjkdkdkd")
 			err := json.Unmarshal(data, gaoiq)
 			if err != nil {
 				fmt.Println(err)
 			}
 			if err == nil {
+				fmt.Println("ceshidjkdjkdkdkd")
 				HandleGroupRequest(bot, gaoiq)
 			}
+			fmt.Println("?ceshidjkdjkdkdkd")
 			return
 		}
 	}
@@ -446,6 +450,7 @@ func (bot *Bot) SendGroupForwardMsg(groupId int64, forwardMsg *Msg) (*onebot.Sen
 		API: &onebot.API{
 			Action: string(onebot.SendForwardMsg),
 			Params: &onebot.Params{
+				GroupId: groupId,
 				Messages: forwardMsg.IMessageList,
 			},
 			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
@@ -628,6 +633,32 @@ func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot
 	}
 }
 
+//  send_group_bot_callback
+//  set_group_bot_status
+func (bot *Bot)SendGroupBotCallback(botAppId, groupId int64, data1, data2 string) (*onebot.SetGroupBanResp, error){
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.SendGroupBotCallback),
+			Params: &onebot.Params{
+				BotId: uint(botAppId),
+				GroupId: groupId,
+				Data1: data1,
+				Data2: data2,
+			},
+			Echo: echo,
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		ggi := &onebot.SetGroupBanResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
+		}
+		json.Unmarshal(_rb, &ggi)
+		return ggi, nil
+	}
+}
 func (bot *Bot) GetGroupInfo(groupId int64, noCache bool) (*onebot.GetGroupInfoResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
@@ -701,7 +732,7 @@ func (bot *Bot) SendMsg(msgType string, userId, groupId int64, msg *Msg, autoEsc
 	}
 }
 
-func (bot *Bot) GetMsg(msgId int64) (*onebot.GetMsgResp, error) {
+func (bot *Bot) GetMsg(msgId int64) (*onebot.IGetMsg, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.GetMsg),
@@ -713,8 +744,8 @@ func (bot *Bot) GetMsg(msgId int64) (*onebot.GetMsgResp, error) {
 	}); err != nil {
 		return nil, err
 	} else {
-		gm := &onebot.GetMsgResp{}
-		_rb, err := json.Marshal(resp)
+		gm := &onebot.IGetMsg{}
+		_rb, err := json.Marshal(resp.Data)
 		if err != nil {
 			return nil, err
 		}
@@ -1019,5 +1050,26 @@ func (bot *Bot) CleanCache() (*onebot.CleanCacheResp, error) {
 			Echo:    resp.Echo,
 		}
 		return cc, nil
+	}
+}
+
+func (bot *Bot) GetGroupList() (*onebot.GetGroupListResp, error) {
+	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
+		API: &onebot.API{
+			Action: string(onebot.GetGroupList),
+			Params: &onebot.Params{},
+			Echo:   echo,
+		},
+	}); err != nil {
+		return nil, err
+	} else {
+		gg := &onebot.GetGroupListResp{}
+		_rb, err := json.Marshal(resp)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(gg)
+		json.Unmarshal(_rb, &gg)
+		return gg, nil
 	}
 }

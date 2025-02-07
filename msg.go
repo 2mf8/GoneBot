@@ -214,13 +214,14 @@ func (msg *Msg) Sleep(time int64) *Msg {
 	return msg
 }
 
-func (msg *Msg) ForwardParam(name, uin string, content *Msg) *Msg {
+func (msg *Msg) ForwardParam(name string, uin, groupId int64, content *Msg) *Msg {
 	msg.IMessageList = append(msg.IMessageList, &onebot.IMessage{
 		Type: "node",
 		Data: map[string]any{
-			"name":    name,
-			"uin":     uin,
-			"content": content.IMessageList,
+			"name":     name,
+			"uin":      uin,
+			"group_id": groupId,
+			"content":  content.IMessageList,
 		},
 	})
 	return msg

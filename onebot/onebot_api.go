@@ -44,6 +44,8 @@ const (
 	CleanCache           ActionType = "clean_cache"
 	GroupPoke            ActionType = "group_poke"
 	FriendPoke           ActionType = "friend_poke"
+	SendGroupBotCallback ActionType = "send_group_bot_callback"
+	SendGroupBotStatus   ActionType = "set_group_bot_status"
 )
 
 type API struct {
@@ -86,6 +88,9 @@ type Params struct {
 	Name             string      `json:"name,omitempty"`
 	Uin              string      `json:"uin,omitempty"`
 	Content          string      `json:"content,omitempty"`
+	Data1            string      `json:"data_1,omitempty"`
+	Data2            string      `json:"data_2,omitempty"`
+	BotId            uint        `json:"bot_id,omitempty"`
 }
 
 type SendMsgResponse struct {

@@ -1,6 +1,8 @@
 package gonebot
 
-import "github.com/2mf8/GoneBot/onebot"
+import (
+	"github.com/2mf8/GoneBot/onebot"
+)
 
 // HandleConnect 机器人连接
 var HandleConnect = func(bot *Bot) {
