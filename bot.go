@@ -31,14 +31,12 @@ func NewBot(botId int64, conn *websocket.Conn) *Bot {
 	messageHandler := func(messageType int, data []byte) {
 		var frame onebot.Frame
 		if messageType == websocket.TextMessage {
-			fmt.Println(string(data))
 			err := json.Unmarshal(data, &frame)
 			if err != nil {
 				log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
 				return
 			}
 		} else if messageType == websocket.BinaryMessage {
-			fmt.Println(string(data))
 			err := json.Unmarshal(data, &frame)
 			if err != nil {
 				log.Errorf("failed to unmarshal websocket text message, err: %+v", err)
@@ -278,19 +276,15 @@ func (bot *Bot) handleFrame(frame *onebot.Frame, data []byte) {
 			}
 			return
 		}
-		fmt.Println(frame.SubType,"djksfhjksdf")
 		if frame.RequestType == string(onebot.GroupAddOrInviteRequest) {
 			gaoiq := &onebot.GroupAddOrInviteRequestEvent{}
-			fmt.Println("ceshidjkdjkdkdkd")
 			err := json.Unmarshal(data, gaoiq)
 			if err != nil {
 				fmt.Println(err)
 			}
 			if err == nil {
-				fmt.Println("ceshidjkdjkdkdkd")
 				HandleGroupRequest(bot, gaoiq)
 			}
-			fmt.Println("?ceshidjkdjkdkdkd")
 			return
 		}
 	}
@@ -450,7 +444,7 @@ func (bot *Bot) SendGroupForwardMsg(groupId int64, forwardMsg *Msg) (*onebot.Sen
 		API: &onebot.API{
 			Action: string(onebot.SendForwardMsg),
 			Params: &onebot.Params{
-				GroupId: groupId,
+				GroupId:  groupId,
 				Messages: forwardMsg.IMessageList,
 			},
 			Echo: fmt.Sprintf("%v", time.Now().UnixNano()),
@@ -633,17 +627,17 @@ func (bot *Bot) GetGroupMemberInfo(groupId, userId int64, noCache bool) (*onebot
 	}
 }
 
-//  send_group_bot_callback
-//  set_group_bot_status
-func (bot *Bot)SendGroupBotCallback(botAppId, groupId int64, data1, data2 string) (*onebot.SetGroupBanResp, error){
+// send_group_bot_callback
+// set_group_bot_status
+func (bot *Bot) SendGroupBotCallback(botAppId, groupId int64, data1, data2 string) (*onebot.SetGroupBanResp, error) {
 	if resp, err := bot.sendFrameAndWait(&onebot.Frame{
 		API: &onebot.API{
 			Action: string(onebot.SendGroupBotCallback),
 			Params: &onebot.Params{
-				BotId: uint(botAppId),
+				BotId:   uint(botAppId),
 				GroupId: groupId,
-				Data1: data1,
-				Data2: data2,
+				Data1:   data1,
+				Data2:   data2,
 			},
 			Echo: echo,
 		},
@@ -1068,7 +1062,6 @@ func (bot *Bot) GetGroupList() (*onebot.GetGroupListResp, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(gg)
 		json.Unmarshal(_rb, &gg)
 		return gg, nil
 	}
